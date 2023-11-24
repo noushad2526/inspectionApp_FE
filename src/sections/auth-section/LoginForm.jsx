@@ -77,7 +77,7 @@ export default function LoginForm() {
                 id="email"
                 label="Enter Email"
                 name="email"
-                variant="standard"
+                variant="outlined"
                 autoFocus
                 onChange={handleChange}
                 error={!!touched.email && !!errors.email}
@@ -91,7 +91,7 @@ export default function LoginForm() {
                 label="Enter Password"
                 type={showPassword ? "text" : "password"}
                 id="password"
-                variant="standard"
+                variant="outlined"
                 autoComplete="current-password"
                 onChange={handleChange}
                 error={!!touched.password && !!errors.password}

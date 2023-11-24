@@ -19,8 +19,10 @@ import {
     MenuItem,
     FormHelperText,
 } from "@mui/material";
+import { styled } from '@mui/material/styles';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import PersonIcon from '@mui/icons-material/Person';
 // formIk
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -34,6 +36,16 @@ const role = [
     { role: ROLE_ADMIN, label: 'Admin' },
     { role: ROLE_USER, label: 'User' }
 ]
+
+const StyledTypography = styled(Typography)(() => ({
+    margin: "25px",
+    fontSize: "1.2rem",
+    backgroundColor: "rgb(145, 158, 171, 0.16)",
+    padding: "10px",
+    borderRadius: "8px",
+    display: "flex",
+    alignItems: "center",
+}));
 
 export default function UserForm() {
 
@@ -60,15 +72,14 @@ export default function UserForm() {
         email: userData.email || "",
         mobileNumber: userData.mobileNumber || "",
         role: userData.role || "",
-        password: "",
+        password: userData.password || "",
     };
 
     // modify request to make api call
     const getUserRequest = (formDetails) => {
 
         // removing unwanted variable for request
-        if (isUpdateUser()) delete formDetails.password;
-        else if (!isUpdateUser()) delete formDetails.id;
+        if (!isUpdateUser()) delete formDetails.id;
 
         // validation for form values and existing values
         if (isUpdateUser() && !validateValues(formDetails)) return null;
@@ -80,6 +91,7 @@ export default function UserForm() {
         if (
             initialValues.fullName === formValues.fullName
             && initialValues.mobileNumber === formValues.mobileNumber
+            && initialValues.password === formValues.password
         ) {
             toast.warn("Nothing to Update")
             return false;
@@ -92,32 +104,30 @@ export default function UserForm() {
         //
         const userDetails = getUserRequest(formDetails);
 
-        console.log(userDetails);
-
-        // // api call
-        // try {
-        //     if (userDetails.error) {
-        //         toast.error(userDetails.error);
-        //     } else {
-        //         setIsLoading(true);
-        //         // register user
-        //         if (!isUpdateUser()) {
-        //             const userRegisterResponse = await registerUser(userDetails);
-        //             toast.success(userRegisterResponse.message);
-        //             // update user          
-        //         } else if (isUpdateUser()) {
-        //             await updateUser(userDetails);
-        //             toast.success("User updated Successfully");
-        //         }
-        //         document.getElementById("userForm").reset(initialValues);
-        //         navigate(-1);
-        //     }
-        // } catch (error) {
-        //     toast.warn(error.response.data.message);
-        //     console.log(error);
-        // } finally {
-        //     setIsLoading(false);
-        // }
+        // api call
+        try {
+            if (userDetails.error) {
+                toast.error(userDetails.error);
+            } else {
+                setIsLoading(true);
+                // register user
+                if (!isUpdateUser()) {
+                    const userRegisterResponse = await registerUser(userDetails);
+                    toast.success(userRegisterResponse.message);
+                    // update user          
+                } else if (isUpdateUser()) {
+                    await updateUser(userDetails);
+                    toast.success("User updated Successfully");
+                }
+                document.getElementById("userForm").reset(initialValues);
+                navigate(-1);
+            }
+        } catch (error) {
+            toast.warn(error.response.data.message);
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
 
@@ -150,6 +160,7 @@ export default function UserForm() {
                             return (
                                 <form onSubmit={handleSubmit} id="userForm">
                                     <Card>
+                                        <StyledTypography variant="subtitle2" ><PersonIcon sx={{ marginRight: "8px" }} />Account Details</StyledTypography>
                                         <Box
                                             display="grid"
                                             gap="30px"
@@ -162,7 +173,8 @@ export default function UserForm() {
                                             <TextField
                                                 required
                                                 fullWidth
-                                                variant="standard"
+                                                variant="outlined"
+                                                size="small"
                                                 type="text"
                                                 id="fullName"
                                                 label="Full Name"
@@ -179,7 +191,8 @@ export default function UserForm() {
                                                 fullWidth
                                                 disabled={isUpdateUser()}
                                                 autoComplete='true'
-                                                variant="standard"
+                                                variant="outlined"
+                                                size="small"
                                                 type="text"
                                                 id="email"
                                                 label="Email"
@@ -194,7 +207,8 @@ export default function UserForm() {
                                             <TextField
                                                 fullWidth
                                                 required
-                                                variant="standard"
+                                                variant="outlined"
+                                                size="small"
                                                 type="text"
                                                 id="mobileNumber"
                                                 label="Mobile Number"
@@ -206,7 +220,7 @@ export default function UserForm() {
                                                 helperText={touched.mobileNumber && errors.mobileNumber}
                                                 sx={{ gridColumn: "span 1" }}
                                             />
-                                            <FormControl variant="standard" sx={{ gridColumn: "span 1" }}>
+                                            <FormControl variant="outlined" sx={{ gridColumn: "span 1" }} size="small">
                                                 <InputLabel
                                                     sx={{ color: touched.role && errors.role ? 'red' : '' }}
                                                     id="role">
@@ -215,7 +229,9 @@ export default function UserForm() {
                                                 <Select
                                                     fullWidth
                                                     required
+                                                    disabled={isUpdateUser()}
                                                     labelId="role"
+                                                    label="Select Role"
                                                     id="role"
                                                     onBlur={handleBlur}
                                                     onChange={(e) => { handleChange(e) }}
@@ -243,10 +259,12 @@ export default function UserForm() {
                                                 label="Password"
                                                 type={showPassword ? "text" : "password"}
                                                 id="password"
-                                                variant="standard"
+                                                variant="outlined"
+                                                size="small"
                                                 autoComplete="current-password"
                                                 onBlur={handleBlur}
                                                 onChange={handleChange}
+                                                value={values.password}
                                                 error={!!touched.password && !!errors.password}
                                                 helperText={touched.password && errors.password}
                                                 sx={{ gridColumn: "span 1" }}

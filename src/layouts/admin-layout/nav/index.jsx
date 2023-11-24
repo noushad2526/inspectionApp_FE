@@ -56,7 +56,7 @@ export default function Nav({ openNav, onCloseNav }) {
       }
 
       // Push the first item to the beginning of the array
-      navItems.unshift({
+      navItems.splice(1, 0, {
         title: 'Profile',
         path: pathh,
         icon: <AccountCircleIcon />,

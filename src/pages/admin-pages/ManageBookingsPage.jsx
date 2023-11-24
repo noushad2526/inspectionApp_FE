@@ -169,16 +169,9 @@ export default function ManageBookingsPage() {
       field: 'fullName',
       headerName: 'User Details',
       flex: 1, // Use flexGrow to make it responsive
-      renderCell: ({ row: { fullName, file, mobileNumber, email } }) => {
+      renderCell: ({ row: { fullName, mobileNumber, email } }) => {
         return (
           <>
-            <Stack direction="row" spacing={2}>
-              {file === null ?
-                <Avatar />
-                :
-                <Avatar src={file.fileData} />
-              }
-            </Stack>
             <Stack direction="column" ml={2}>
               <Typography
                 variant="subtitle2"
