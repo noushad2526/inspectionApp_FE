@@ -30,6 +30,20 @@ import { doLogout } from '../../services';
 import { deleteUser, getAllUser } from '../../services/api-service/UserController';
 import ActionMenu from '../../components/menu/ActionMenu';
 
+const dummyBookings = [
+  {
+    id: 1,
+    email: 'john.doe@example.com',
+    inspectionDateAndTime: '2023-12-01 10:00 AM',
+  },
+  {
+    id: 2,
+    email: 'jane.smith@example.com',
+    inspectionDateAndTime: '2023-12-02 02:30 PM',
+  },
+  // Add more dummy data as needed
+];
+
 export default function ManageBookingsPage() {
 
   const navigate = useNavigate();
@@ -72,7 +86,7 @@ export default function ManageBookingsPage() {
     navigate('edit-booking', { state: row });
   }
 
-  const handleShare = (row) => {
+  const handleView = (row) => {
     console.log(row);
   }
 
@@ -105,39 +119,12 @@ export default function ManageBookingsPage() {
   };
 
   const columns = [
-    {
-      field: 'fullName',
-      headerName: 'Name',
-      width: 303,
-      renderCell: ({ row: { fullName } }) => {
-        return (
-          <Typography variant="subtitle2" noWrap style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {fullName}
-          </Typography>
-        );
-      },
-    },
-    { field: 'mobileNumber', headerName: 'Mobile Number', width: 180 },
-    { field: 'email', headerName: 'E-mail', width: 180 },
-    {
-      field: "role",
-      headerName: "Role",
-      width: 180,
-      renderCell: ({ row: { role } }) => {
-        return (
-          <Stack direction="row" alignItems="center" spacing={1}>
-            {role === "ADMIN" && <SecurityOutlinedIcon />}
-            {role === "USER" && <PersonRoundedIcon />}
-            <Typography variant="subtitle2" noWrap>
-              {role}
-            </Typography>
-          </Stack>
-        );
-      },
-    },
+    { field: 'id', headerName: 'Booking Id', width: 130 },
+    { field: 'email', headerName: 'E-mail', width: 250 },
+    { field: 'inspectionDateAndTime', headerName: 'Inspection Scheduled', width: 180 },
     {
       field: "Actions",
-      width: 130,
+      width: 180,
       renderCell: (params) => {
         return (
           <>
@@ -149,7 +136,7 @@ export default function ManageBookingsPage() {
 
             <MenuItem sx={{ color: 'info.main' }}>
               <Tooltip title="Share Qr Code">
-                <Iconify icon={'eva:paper-plane-outline'} onClick={() => handleShare(params.row)} />
+                <Iconify icon={'eva:eye-outline'} onClick={() => handleView(params.row)} />
               </Tooltip>
             </MenuItem>
 
@@ -166,10 +153,10 @@ export default function ManageBookingsPage() {
 
   const mobileColumns = [
     {
-      field: 'fullName',
-      headerName: 'User Details',
+      field: 'email',
+      headerName: 'Inspections Details',
       flex: 1, // Use flexGrow to make it responsive
-      renderCell: ({ row: { fullName, mobileNumber, email } }) => {
+      renderCell: ({ row: { id, email, inspectionDateAndTime } }) => {
         return (
           <>
             <Stack direction="column" ml={2}>
@@ -183,11 +170,11 @@ export default function ManageBookingsPage() {
                   whiteSpace: 'nowrap',
                 }}
               >
-                {fullName}
-                <br />
-                {mobileNumber}
+                {id}
                 <br />
                 {email}
+                <br />
+                {inspectionDateAndTime}
               </Typography>
             </Stack>
           </>
@@ -205,7 +192,7 @@ export default function ManageBookingsPage() {
               <ActionMenu
                 onClickEdit={() => handleEdit(params.row)}
                 onClickDelete={() => handleDialog(params.row)}
-                onClickShare={() => handleShare(params.row)}
+                onClickView={() => handleView(params.row)}
               />
             </Stack>
           </>
@@ -232,7 +219,7 @@ export default function ManageBookingsPage() {
         {!isLoading ?
           <Card style={{ height: 522, width: '100%' }}>
             <StyledDataGrid
-              rows={bookings}
+              rows={dummyBookings}
               columns={mobileView ? columns : mobileColumns}
               getRowHeight={() => mobileView ? undefined : 100}
               checkboxSelection={mobileView}

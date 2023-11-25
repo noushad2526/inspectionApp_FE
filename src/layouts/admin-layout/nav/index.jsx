@@ -129,7 +129,6 @@ export default function Nav({ openNav, onCloseNav }) {
             sx: {
               width: NAV_WIDTH,
               bgcolor: '#ffff',
-              borderRightStyle: 'dashed',
             },
           }}
         >
@@ -145,7 +144,6 @@ export default function Nav({ openNav, onCloseNav }) {
           PaperProps={{
             sx: { width: NAV_WIDTH },
             bgcolor: '#ffff',
-            borderRightStyle: 'dashed',
           }}
         >
           {renderContent}

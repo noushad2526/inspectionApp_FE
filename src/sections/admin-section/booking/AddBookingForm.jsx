@@ -18,18 +18,25 @@ import {
     FormHelperText,
     ToggleButtonGroup,
     ToggleButton,
+    Paper,
 } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
 import DirectionsCarRoundedIcon from '@mui/icons-material/DirectionsCarRounded';
 import CarRepairIcon from '@mui/icons-material/CarRepair';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
+// datepicker
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { MobileDateTimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 // formIk
 import { Formik } from "formik";
 import * as yup from "yup";
 import { registerUser, updateUser } from "../../../services/api-service";
 import LoadingLayer from "../../../components/custom-progress/global-progress/LoadingProgress";
-import { MenuProps, registrationCountry } from "./Data";
+import { MenuProps, inspectionServiceType, registrationCountry, registrationType } from "./Data";
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -49,25 +56,43 @@ export default function AddBookingForm() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
+    const tomorrow = dayjs().add(1, 'day');
     const [isRegisteredVehicle, setIsRegisteredVehicle] = useState(true);
+    const [inspectionTime, setInspectionTime] = useState(tomorrow);
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     const initialValues = {
         // personal information
-        name: "",
+        fullName: "",
         email: "",
         mobileNumber: "",
         // vehicale information
-        registeredVhicle: true,
-        registrationCountry: "",
+        registeredVehicle: true,
+        registrationCountry: "Saudi Arabia",
         plateNumber: "",
+        registrationType: "Private Vehicle",
         certificateNumber: "", // only for unregistere vehicle
-
+        // inspection time
+        inspectionDateAndTime: inspectionTime,
+        // service center
+        vehicleType: "Private Vehicle",
+        inspectionServiceType: "Periodic Inspection Service",
+        region: "Riyadh",
+        inspectionCenter: "Sahara Inspection Center"
     };
 
     // modify request to make api call
     const getBookingRequest = (formDetails) => {
+        if (isRegisteredVehicle) {
+            formDetails.registeredVehicle = true;
+            delete formDetails.certificateNumber;
+        } else {
+            formDetails.registeredVehicle = false;
+            delete formDetails.registrationCountry;
+            delete formDetails.plateNumber;
+            delete formDetails.registrationType;
+        }
         return formDetails;
     };
 
@@ -122,7 +147,7 @@ export default function AddBookingForm() {
                     <Formik
                         onSubmit={handleFormSubmit}
                         initialValues={initialValues}
-                        validationSchema={checkoutSchema}
+                        validationSchema={isRegisteredVehicle ? registeredVehicleSchema : unregisteredVehicleSchema}
                     >
                         {({
                             values,
@@ -270,6 +295,38 @@ export default function AddBookingForm() {
                                                         helperText={touched.plateNumber && errors.plateNumber}
                                                         sx={{ gridColumn: "span 1" }}
                                                     />
+                                                    <FormControl variant="outlined" sx={{ gridColumn: "span 1" }} size="small">
+                                                        <InputLabel
+                                                            sx={{ color: touched.registrationType && errors.registrationType ? 'red' : '' }}
+                                                            id="registrationType">
+                                                            Registration Type
+                                                        </InputLabel>
+                                                        <Select
+                                                            fullWidth
+                                                            required
+                                                            labelId="registrationType"
+                                                            label="Registration Type"
+                                                            id="registrationType"
+                                                            onBlur={handleBlur}
+                                                            onChange={(e) => { handleChange(e) }}
+                                                            name="registrationType"
+                                                            value={values.registrationType}
+                                                            error={!!touched.registrationType && !!errors.registrationType}
+                                                            MenuProps={MenuProps}
+                                                        >
+                                                            <MenuItem value="">
+                                                                <em>None</em>
+                                                            </MenuItem>
+                                                            {registrationType.map((option) => (
+                                                                <MenuItem key={option.value} value={option.value}>
+                                                                    {option.value}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                        {touched.registrationType && errors.registrationType && (
+                                                            <FormHelperText sx={{ color: 'red' }}>{errors.registrationType}</FormHelperText>
+                                                        )}
+                                                    </FormControl>
                                                 </>
                                             }
                                             {!isRegisteredVehicle &&
@@ -301,23 +358,22 @@ export default function AddBookingForm() {
                                                 margin: "25px",
                                             }}
                                         >
-                                            <TextField
-                                                fullWidth
-                                                size="small"
-                                                required
-                                                variant="outlined"
-                                                type="text"
-                                                id="certificateNumber"
-                                                label="Custom Certificate Number"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                name="certificateNumber"
-                                                value={values.certificateNumber}
-                                                error={!!touched.certificateNumber && !!errors.certificateNumber}
-                                                helperText={touched.certificateNumber && errors.certificateNumber}
-                                                sx={{ gridColumn: "span 1" }}
-                                            />
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DemoContainer components={['MobileDateTimePicker']}>
+                                                    <MobileDateTimePicker
+                                                        label="Inspection Date and Time"
+                                                        value={values.inspectionDateAndTime}
+                                                        name="inspectionDateAndTime"
+                                                        onBlur={handleBlur}
+                                                        onChange={(date) => setInspectionTime(date)}
+                                                        disablePast
+                                                        error={!!touched.inspectionDateAndTime && !!errors.inspectionDateAndTime}
+                                                        helperText={touched.inspectionDateAndTime && errors.inspectionDateAndTime}
+                                                    />
+                                                </DemoContainer>
+                                            </LocalizationProvider>
                                         </Box>
+                                        {/* Service Center */}
                                         <StyledTypography variant="subtitle2" ><CarRepairIcon sx={{ marginRight: "8px" }} />Service Center</StyledTypography>
                                         <Box
                                             display="grid"
@@ -330,140 +386,125 @@ export default function AddBookingForm() {
                                         >
                                             <FormControl variant="outlined" sx={{ gridColumn: "span 1" }} size="small">
                                                 <InputLabel
-                                                    sx={{ color: touched.registrationCountry && errors.registrationCountry ? 'red' : '' }}
-                                                    id="registrationCountry">
-                                                    Registration Country
+                                                    id="vehicleType">
+                                                    Vehicle Type
                                                 </InputLabel>
                                                 <Select
                                                     fullWidth
                                                     required
-                                                    labelId="registrationCountry"
-                                                    label="Registration Country"
-                                                    id="registrationCountry"
+                                                    disabled
+                                                    labelId="vehicleType"
+                                                    label="Vehicle Type"
+                                                    id="vehicleType"
                                                     onBlur={handleBlur}
                                                     onChange={(e) => { handleChange(e) }}
-                                                    name="registrationCountry"
-                                                    value={values.registrationCountry}
-                                                    error={!!touched.registrationCountry && !!errors.registrationCountry}
+                                                    name="vehicleType"
+                                                    value={values.vehicleType}
+                                                    error={!!touched.vehicleType && !!errors.vehicleType}
+                                                    MenuProps={MenuProps}
+                                                >
+                                                    <MenuItem value="Private Vehicle">
+                                                        Private Vehicle
+                                                    </MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                            <FormControl variant="outlined" sx={{ gridColumn: "span 1" }} size="small">
+                                                <InputLabel
+                                                    sx={{ color: touched.inspectionServiceType && errors.inspectionServiceType ? 'red' : '' }}
+                                                    id="inspectionServiceType">
+                                                    Inspection Service Type
+                                                </InputLabel>
+                                                <Select
+                                                    fullWidth
+                                                    required
+                                                    labelId="inspectionServiceType"
+                                                    label="Inspection Service Type"
+                                                    id="inspectionServiceType"
+                                                    onBlur={handleBlur}
+                                                    onChange={(e) => { handleChange(e) }}
+                                                    name="inspectionServiceType"
+                                                    value={values.inspectionServiceType}
+                                                    error={!!touched.inspectionServiceType && !!errors.inspectionServiceType}
                                                     MenuProps={MenuProps}
                                                 >
                                                     <MenuItem value="">
                                                         <em>None</em>
                                                     </MenuItem>
-                                                    {registrationCountry.map((option) => (
+                                                    {inspectionServiceType.map((option) => (
                                                         <MenuItem key={option.value} value={option.value}>
                                                             {option.value}
                                                         </MenuItem>
                                                     ))}
                                                 </Select>
-                                                {touched.registrationCountry && errors.registrationCountry && (
-                                                    <FormHelperText sx={{ color: 'red' }}>{errors.registrationCountry}</FormHelperText>
+                                                {touched.inspectionServiceType && errors.inspectionServiceType && (
+                                                    <FormHelperText sx={{ color: 'red' }}>{errors.inspectionServiceType}</FormHelperText>
                                                 )}
                                             </FormControl>
                                             <FormControl variant="outlined" sx={{ gridColumn: "span 1" }} size="small">
                                                 <InputLabel
-                                                    sx={{ color: touched.registrationCountry && errors.registrationCountry ? 'red' : '' }}
-                                                    id="registrationCountry">
-                                                    Registration Country
+                                                    id="region">
+                                                    Region
                                                 </InputLabel>
                                                 <Select
                                                     fullWidth
                                                     required
-                                                    labelId="registrationCountry"
-                                                    label="Registration Country"
-                                                    id="registrationCountry"
+                                                    disabled
+                                                    labelId="region"
+                                                    label="Region"
+                                                    id="region"
                                                     onBlur={handleBlur}
                                                     onChange={(e) => { handleChange(e) }}
-                                                    name="registrationCountry"
-                                                    value={values.registrationCountry}
-                                                    error={!!touched.registrationCountry && !!errors.registrationCountry}
+                                                    name="region"
+                                                    value={values.region}
+                                                    error={!!touched.region && !!errors.region}
                                                     MenuProps={MenuProps}
                                                 >
-                                                    <MenuItem value="">
-                                                        <em>None</em>
+                                                    <MenuItem value="Riyadh">
+                                                        Riyadh
                                                     </MenuItem>
-                                                    {registrationCountry.map((option) => (
-                                                        <MenuItem key={option.value} value={option.value}>
-                                                            {option.value}
-                                                        </MenuItem>
-                                                    ))}
                                                 </Select>
-                                                {touched.registrationCountry && errors.registrationCountry && (
-                                                    <FormHelperText sx={{ color: 'red' }}>{errors.registrationCountry}</FormHelperText>
-                                                )}
                                             </FormControl>
                                             <FormControl variant="outlined" sx={{ gridColumn: "span 1" }} size="small">
                                                 <InputLabel
-                                                    sx={{ color: touched.registrationCountry && errors.registrationCountry ? 'red' : '' }}
-                                                    id="registrationCountry">
-                                                    Registration Country
+                                                    id="inspectionCenter">
+                                                    Inspection Center
                                                 </InputLabel>
                                                 <Select
                                                     fullWidth
                                                     required
-                                                    labelId="registrationCountry"
-                                                    label="Registration Country"
-                                                    id="registrationCountry"
+                                                    disabled
+                                                    labelId="inspectionCenter"
+                                                    label="inspectionCenter"
+                                                    id="inspectionCenter"
                                                     onBlur={handleBlur}
                                                     onChange={(e) => { handleChange(e) }}
-                                                    name="registrationCountry"
-                                                    value={values.registrationCountry}
-                                                    error={!!touched.registrationCountry && !!errors.registrationCountry}
+                                                    name="inspectionCenter"
+                                                    value={values.inspectionCenter}
+                                                    error={!!touched.inspectionCenter && !!errors.inspectionCenter}
                                                     MenuProps={MenuProps}
                                                 >
-                                                    <MenuItem value="">
-                                                        <em>None</em>
+                                                    <MenuItem value="Sahara Inspection Center">
+                                                        Sahara Inspection Center
                                                     </MenuItem>
-                                                    {registrationCountry.map((option) => (
-                                                        <MenuItem key={option.value} value={option.value}>
-                                                            {option.value}
-                                                        </MenuItem>
-                                                    ))}
                                                 </Select>
-                                                {touched.registrationCountry && errors.registrationCountry && (
-                                                    <FormHelperText sx={{ color: 'red' }}>{errors.registrationCountry}</FormHelperText>
-                                                )}
-                                            </FormControl>
-                                            <FormControl variant="outlined" sx={{ gridColumn: "span 1" }} size="small">
-                                                <InputLabel
-                                                    sx={{ color: touched.registrationCountry && errors.registrationCountry ? 'red' : '' }}
-                                                    id="registrationCountry">
-                                                    Registration Country
-                                                </InputLabel>
-                                                <Select
-                                                    fullWidth
-                                                    required
-                                                    labelId="registrationCountry"
-                                                    label="Registration Country"
-                                                    id="registrationCountry"
-                                                    onBlur={handleBlur}
-                                                    onChange={(e) => { handleChange(e) }}
-                                                    name="registrationCountry"
-                                                    value={values.registrationCountry}
-                                                    error={!!touched.registrationCountry && !!errors.registrationCountry}
-                                                    MenuProps={MenuProps}
-                                                >
-                                                    <MenuItem value="">
-                                                        <em>None</em>
-                                                    </MenuItem>
-                                                    {registrationCountry.map((option) => (
-                                                        <MenuItem key={option.value} value={option.value}>
-                                                            {option.value}
-                                                        </MenuItem>
-                                                    ))}
-                                                </Select>
-                                                {touched.registrationCountry && errors.registrationCountry && (
-                                                    <FormHelperText sx={{ color: 'red' }}>{errors.registrationCountry}</FormHelperText>
-                                                )}
                                             </FormControl>
                                         </Box>
+                                        <Container maxWidth="md" style={{ padding: '20px', marginTop: "-10px" }}>
+                                            <iframe
+                                                title="Sahara Inspection Center"
+                                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.2926757388304!2d46.783730999999996!3d24.8196628!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2effab5302ddb9%3A0x27f0a7712a2faef9!2zUkZZQTMwODgsIDMwODggTmFxYWgsIDgxNDbYjCDYrdmKINin2YTZitix2YXZiNmD2IwgUml5YWRoIDEzMjUxLCBTYXVkaSBBcmFiaWE!5e0!3m2!1sen!2sin!4v1700853076613!5m2!1sen!2sin"
+                                                width="100%"
+                                                height="300"
+                                                allowFullScreen=""
+                                                loading="lazy"
+                                            />
+                                        </Container>
                                     </Card>
                                     <Box display="flex" justifyContent="end" mt="20px">
                                         <Button type="submit" color="secondary" variant="contained">
                                             Submit
                                         </Button>
                                     </Box>
-
                                 </form>
                             );
                         }}
@@ -474,18 +515,44 @@ export default function AddBookingForm() {
     );
 };
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-const phoneRegExp = "[6-9]{1}[0-9]{9}";
-const NameRegex = "^[a-zA-Z]{2,40} [a-zA-Z]{2,40}$";
 const EmailRegex = /^[a-zA-Z0-9]+([._%+-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;;
 
-const checkoutSchema = yup.object().shape({
-    fullName: yup.string().required("required").matches(NameRegex, "Name length is longer or contains invalid characters"),
+const registeredVehicleSchema = yup.object().shape({
+    fullName: yup.string().required("required"),
     email: yup.string().email("invalid email").required("required").matches(EmailRegex, "Email is not valid"),
-    mobileNumber: yup
-        .string()
-        .matches(phoneRegExp, "Phone number is not valid")
-        .length(10, "Mobile number must be 10 digits long")
-        .required("required"),
+    mobileNumber: yup.string().required("required"),
     registrationCountry: yup.string()
-        .required("Please Select registrationCountry"),
+        .required("Please Select Registration Country"),
+    plateNumber: yup.string().required("required"),
+    registrationType: yup.string()
+        .required("Please Select Registration Type"),
+    inspectionDateAndTime: yup.string()
+        .required("Please Select Inspection Date and Time"),
+    vehicleType: yup.string()
+        .required("Please Select Vehicle Type"),
+    inspectionServiceType: yup.string()
+        .required("Please Select Service Type"),
+    region: yup.string()
+        .required("Please Select Region"),
+    inspectionCenter: yup.string()
+        .required("Please Select Inspection Center"),
 });
+
+const unregisteredVehicleSchema = yup.object().shape({
+    fullName: yup.string().required("required"),
+    email: yup.string().email("invalid email").required("required").matches(EmailRegex, "Email is not valid"),
+    mobileNumber: yup.string().required("required"),
+    certificateNumber: yup.string().required("required"),
+    inspectionDateAndTime: yup.string()
+        .required("Please Select Inspection Date and Time"),
+    vehicleType: yup.string()
+        .required("Please Select Vehicle Type"),
+    inspectionServiceType: yup.string()
+        .required("Please Select Service Type"),
+    region: yup.string()
+        .required("Please Select Region"),
+    inspectionCenter: yup.string()
+        .required("Please Select Inspection Center"),
+});
+
+

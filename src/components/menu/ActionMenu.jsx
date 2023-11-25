@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import Iconify from '../iconify/Iconify';
 
-function ActionMenu({ onClickEdit, onClickDelete, onClickShare, disableEdit, disableDelete, disableShare }) {
+function ActionMenu({ onClickEdit, onClickDelete, onClickView, disableEdit, disableDelete, disableView }) {
     const [open, setOpen] = useState(null);
 
     const handleCloseMenu = () => {
@@ -47,9 +47,9 @@ function ActionMenu({ onClickEdit, onClickDelete, onClickShare, disableEdit, dis
                     Edit
                 </MenuItem>}
 
-                {!disableShare && <MenuItem sx={{ color: 'info.main' }} onClick={onClickShare}>
-                    <Iconify icon={'eva:paper-plane-outline'} sx={{ mr: 2 }} />
-                    Share QR
+                {!disableView && <MenuItem sx={{ color: 'info.main' }} onClick={onClickView}>
+                    <Iconify icon={'eva:eye-outline'} sx={{ mr: 2 }} />
+                    View
                 </MenuItem>}
 
                 {!disableDelete && <MenuItem sx={{ color: 'error.main' }} onClick={onClickDelete}>
@@ -67,17 +67,17 @@ export default ActionMenu;
 ActionMenu.propTypes = {
     onClickEdit: PropTypes.bool,
     onClickDelete: PropTypes.bool,
-    onClickShare: PropTypes.bool,
+    onClickView: PropTypes.bool,
     disableEdit: PropTypes.bool,
     disableDelete: PropTypes.bool,
-    disableShare: PropTypes.bool,
+    disableView: PropTypes.bool,
 };
 
 ActionMenu.defaultProps = {
     onClickEdit: false,
     onClickDelete: false,
-    onClickShare: false,
+    onClickView: false,
     disableEdit: false,
     disableDelete: false,
-    disableShare: false,
+    disableView: false,
 };
