@@ -93,6 +93,7 @@ export default function AddBookingForm() {
             delete formDetails.plateNumber;
             delete formDetails.registrationType;
         }
+        formDetails.inspectionDateAndTime = inspectionTime.$d;
         return formDetails;
     };
 
@@ -362,10 +363,11 @@ export default function AddBookingForm() {
                                                 <DemoContainer components={['MobileDateTimePicker']}>
                                                     <MobileDateTimePicker
                                                         label="Inspection Date and Time"
-                                                        value={values.inspectionDateAndTime}
+                                                        value={inspectionTime}
                                                         name="inspectionDateAndTime"
                                                         onBlur={handleBlur}
                                                         onChange={(date) => setInspectionTime(date)}
+                                                        // format="DD MM YYYY HH:mm A"
                                                         disablePast
                                                         error={!!touched.inspectionDateAndTime && !!errors.inspectionDateAndTime}
                                                         helperText={touched.inspectionDateAndTime && errors.inspectionDateAndTime}

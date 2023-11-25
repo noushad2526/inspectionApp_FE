@@ -11,13 +11,14 @@ import ManageBookingsPage from './pages/admin-pages/ManageBookingsPage';
 // sections
 import { UserForm } from './sections/admin-section/user';
 import { ProfileForm } from './sections/admin-section/profile/ProfileForm';
-import { AddBookingForm } from './sections/admin-section/booking';
+import { AddBookingForm, GenerateInvoice } from './sections/admin-section/booking';
 import { ChildLayout } from './layouts/child-layout';
 // service
 import { getUserDetails, isUserPresent } from "./services/storage-service";
 // constants
 import { ROLE_ADMIN, ROLE_USER } from './services/constants';
 import { verifyUser } from './services';
+import InvoicePage from './pages/admin-pages/InvoicePage';
 
 // ----------------------------------------------------------------------
 
@@ -87,10 +88,13 @@ export default function Router() {
           children: [
             { path: '', element: <ManageBookingsPage /> },
             { path: 'add-booking', element: <AddBookingForm /> },
+            { path: 'generate-invoice', element: <GenerateInvoice /> }
           ]
         },
       ] : [],
     },
+
+    { path: 'invoice', element: <InvoicePage /> },
 
     // login route
     {
