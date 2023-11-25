@@ -29,20 +29,8 @@ import { doLogout } from '../../services';
 // api
 import { deleteUser, getAllUser } from '../../services/api-service/UserController';
 import ActionMenu from '../../components/menu/ActionMenu';
+import { getAllBooking } from '../../services/api-service/BookingController';
 
-const dummyBookings = [
-  {
-    id: 1,
-    email: 'john.doe@example.com',
-    inspectionDateAndTime: '2023-12-01 10:00 AM',
-  },
-  {
-    id: 2,
-    email: 'jane.smith@example.com',
-    inspectionDateAndTime: '2023-12-02 02:30 PM',
-  },
-  // Add more dummy data as needed
-];
 
 export default function ManageBookingsPage() {
 
@@ -57,26 +45,27 @@ export default function ManageBookingsPage() {
 
   const mobileView = useResponsive('up', 'md');
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       setIsLoading(true);
-  //       // Admin block
-  //       const data = await getAllUser();
-  //       if (data.length === 0) {
-  //         toast.warn("No bookings Found");
-  //       }
-  //       setBookings(data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setIsLoading(false);
-  //       setReload(false);
-  //     }
-  //   };
-  //   fetchData();
-  //   // eslint-disable-next-line
-  // }, [reload]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        // Admin block
+        const data = await getAllBooking();
+
+        if (data.length === 0) {
+          toast.warn("No bookings Found");
+        }
+        setBookings(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+        setReload(false);
+      }
+    };
+    fetchData();
+    // eslint-disable-next-line
+  }, [reload]);
 
   const handleAddUser = () => {
     navigate('add-booking');
@@ -219,7 +208,7 @@ export default function ManageBookingsPage() {
         {!isLoading ?
           <Card style={{ height: 522, width: '100%' }}>
             <StyledDataGrid
-              rows={dummyBookings}
+              rows={bookings}
               columns={mobileView ? columns : mobileColumns}
               getRowHeight={() => mobileView ? undefined : 100}
               checkboxSelection={mobileView}

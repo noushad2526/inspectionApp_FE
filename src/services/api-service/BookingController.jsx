@@ -4,5 +4,9 @@ import axios from "axios";
 import { getHeader, getHeaderWithoutToken } from "..";
 
 export const scheduleBooking = (bookingDetails) => {
-    return axios.post("/land-auth/scheduleBooking", JSON.stringify(bookingDetails)).then((response) => response.data);
+    return axios.post("/land-auth/scheduleBooking", JSON.stringify(bookingDetails), getHeader()).then((response) => response.data);
+};
+
+export const getAllBooking = () => {
+    return axios.get("/land-auth/getAllBooking", getHeader()).then((response) => response.data);
 };

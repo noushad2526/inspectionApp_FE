@@ -37,6 +37,7 @@ import * as yup from "yup";
 import { registerUser, updateUser } from "../../../services/api-service";
 import LoadingLayer from "../../../components/custom-progress/global-progress/LoadingProgress";
 import { MenuProps, inspectionServiceType, registrationCountry, registrationType } from "./Data";
+import { scheduleBooking } from "../../../services/api-service/BookingController";
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -93,7 +94,11 @@ export default function AddBookingForm() {
             delete formDetails.plateNumber;
             delete formDetails.registrationType;
         }
-        formDetails.inspectionDateAndTime = inspectionTime.$d;
+        const inspectionDate = dayjs(formDetails.inspectionDateAndTime);
+
+        // Now you can format it
+        const formattedDate = inspectionDate.format('ddd MMM D YYYY HH:mm:ss [GMT]ZZ (IST)');
+        formDetails.inspectionDateAndTime = formattedDate;
         return formDetails;
     };
 
@@ -104,29 +109,25 @@ export default function AddBookingForm() {
         console.log(bookingDetails);
 
         // // api call
-        // try {
-        //     if (userDetails.error) {
-        //         toast.error(userDetails.error);
-        //     } else {
-        //         setIsLoading(true);
-        //         // register user
-        //         if (!isUpdateUser()) {
-        //             const userRegisterResponse = await registerUser(userDetails);
-        //             toast.success(userRegisterResponse.message);
-        //             // update user          
-        //         } else if (isUpdateUser()) {
-        //             await updateUser(userDetails);
-        //             toast.success("User updated Successfully");
-        //         }
-        //         document.getElementById("bookingForm").reset(initialValues);
-        //         navigate(-1);
-        //     }
-        // } catch (error) {
-        //     toast.warn(error.response.data.message);
-        //     console.log(error);
-        // } finally {
-        //     setIsLoading(false);
-        // }
+        // api call
+        try {
+            if (bookingDetails.error) {
+                toast.error(bookingDetails.error);
+            } else {
+                setIsLoading(true);
+                // register user
+                const scheduleBookingResponse = await scheduleBooking(bookingDetails);
+                console.log(scheduleBookingResponse);
+                toast.success(scheduleBookingResponse.message);
+                document.getElementById("bookingForm").reset(initialValues);
+                navigate(-1);
+            }
+        } catch (error) {
+            toast.warn(error.response.data.message);
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleLicenseStatus = (event, registeredVehicle) => {
