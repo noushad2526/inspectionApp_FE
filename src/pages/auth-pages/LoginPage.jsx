@@ -7,7 +7,6 @@ import { Container, Typography, Divider } from '@mui/material';
 import useResponsive from '../../hooks/useResponsive';
 
 const LoginForm = lazy(() => import('../../sections/auth-section/LoginForm'));
-const Copyright = lazy(() => import('../../components/copyright/CopyRight'));
 
 // ----------------------------------------------------------------------
 
@@ -71,7 +70,7 @@ export default function LoginPage() {
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
               Hi, Welcome Back
             </Typography>
-            <img src={`${process.env.PUBLIC_URL}/assets/illustrations/illustration_login.png`} alt="login" />
+            <img src={`${process.env.PUBLIC_URL}/assets/illustrations/illustration_login.jpg`} alt="login" />
           </StyledSection>
         )}
 
@@ -93,7 +92,7 @@ export default function LoginPage() {
             </style>
 
             <Typography component="h1" variant="h2" fontWeight="bold" align='center'>
-              <Copyright sx={{ mt: 5, ml: 2 }} />
+              {/* <Copyright sx={{ mt: 5, ml: 2 }} /> */}
             </Typography>
           </StyledContent>
         </Container>

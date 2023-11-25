@@ -94,7 +94,7 @@ export default function Router() {
       ] : [],
     },
 
-    { path: 'invoice', element: <InvoicePage /> },
+    { path: 'invoice/:bookingId', element: <InvoicePage /> },
 
     // login route
     {

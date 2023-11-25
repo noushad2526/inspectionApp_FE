@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router';
 import { Grid } from '@mui/material';
-import Invoice from '../../components/invoice/GenerateQR';
+import GenerateInvoice from '../../components/invoice/GenerateInvoice';
 
 const InvoicePage = () => {
-
-    // create a page which verify the scanner find by id from path and display values
-    const [invoice, setInvoice] = useState();
-
+    const { bookingId } = useParams();
     const bookingDetails = {
-        bookingId: 'BKG000001',
-    };
-
+        serviceCenter: "Sahara service center"
+    }
     return (
-        <Grid style={{ textAlign: 'center', marginTop: '50px' }}>
-            <Invoice invoiceDetails={bookingDetails} />
+        <Grid >
+            <GenerateInvoice invoiceDetails={{ registeredVehicle: false }} />
         </Grid>
     );
 };

@@ -8,7 +8,7 @@ const SkeletonProgress = ({
     linearProgressWidth = '200px',
     linearProgressMT = "50%"
 }) => {
-    const typography = "Appmomos";
+    const typography = "Sahara";
     return (
         <Stack sx={{ position: 'relative' }} alignItems="center" justifyContent="center">
             <LinearProgress
@@ -35,7 +35,7 @@ const SkeletonProgress = ({
                 }}
             >
                 <Grid item sx={{ mb: 1 }}>
-                    <Avatar sx={{ height: '40px', width: '40px', borderRadius: 1 }} src={`${process.env.PUBLIC_URL}/assets/tapassavi_logo.png`} />
+                    <Avatar sx={{ height: '40px', width: '40px', borderRadius: 1 }} src={`${process.env.PUBLIC_URL}/assets/sahara_logo.png`} />
                 </Grid>
                 <Grid item sx={{ mb: 1 }}>
                     <Typography ml={1}>{typography}</Typography>

@@ -1,4 +1,3 @@
-// MovieTicket.js
 import React, { useRef } from 'react';
 import QRCode from 'qrcode.react';
 import { Link } from 'react-router-dom';
@@ -12,7 +11,7 @@ import html2canvas from 'html2canvas';
 // service
 import { getUserDetails } from '../../services/storage-service';
 
-const Invoice = ({ invoiceDetails }) => {
+const GenerateQR = ({ invoiceDetails }) => {
 
     const userRole = getUserDetails().role;
     const linkTo = `/${userRole.toLowerCase()}/manage-bookings`;
@@ -76,4 +75,4 @@ const Invoice = ({ invoiceDetails }) => {
     );
 };
 
-export default Invoice;
+export default GenerateQR;

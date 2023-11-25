@@ -7,7 +7,7 @@ const Logo = forwardRef(({ disabledLink = false, link = '/', image, sx, ...other
 
   const defaultLogo = (
     <img
-      src={`${process.env.PUBLIC_URL}/assets/appmomos_logo.png`}
+      src={`${process.env.PUBLIC_URL}/assets/sahara_logo.png`}
       alt='logo'
     />
   );
