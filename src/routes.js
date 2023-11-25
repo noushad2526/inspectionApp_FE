@@ -64,6 +64,7 @@ export default function Router() {
             { path: 'add-booking', element: <AddBookingForm /> },
           ]
         },
+        { path: 'generate-invoice', element: <GenerateInvoice /> },
       ] : [],
     },
 
@@ -81,19 +82,20 @@ export default function Router() {
         { path: 'home', element: <DashboardAppPage /> },
         { path: 'profile', element: <ProfileForm /> },
 
-        // user/manage-bookings
+        // admin/manage-bookings
         {
           path: 'manage-bookings',
           element: <ChildLayout />,
           children: [
             { path: '', element: <ManageBookingsPage /> },
             { path: 'add-booking', element: <AddBookingForm /> },
-            { path: 'generate-invoice', element: <GenerateInvoice /> }
           ]
         },
+        { path: 'generate-invoice', element: <GenerateInvoice /> },
       ] : [],
     },
 
+    // scan qr code
     { path: 'invoice/:bookingId', element: <InvoicePage /> },
 
     // login route

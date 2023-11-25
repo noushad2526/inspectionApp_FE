@@ -10,8 +10,9 @@ import ShareIcon from '@mui/icons-material/Share';
 import html2canvas from 'html2canvas';
 // service
 import { getUserDetails } from '../../services/storage-service';
+import { QRCODE_URL } from '../../services/constants';
 
-const GenerateQR = ({ invoiceDetails }) => {
+const GenerateQR = ({ invoiceDetails, disabledTitle = false, disabledGoBack = false }) => {
 
     const userRole = getUserDetails().role;
     const linkTo = `/${userRole.toLowerCase()}/manage-bookings`;
@@ -40,14 +41,17 @@ const GenerateQR = ({ invoiceDetails }) => {
 
     return (
         <>
-            <TaskAltRoundedIcon sx={{ fontSize: '3rem', marginRight: 2, color: '#00FF00' }} />
-            <Typography variant="h6" sx={{ mb: 3 }}>
-                Appointment was successfully booked
-            </Typography>
+            {!disabledTitle &&
+                <>
+                    <TaskAltRoundedIcon sx={{ fontSize: '3rem', marginRight: 2, color: '#00FF00' }} />
+                    <Typography variant="h6" sx={{ mb: 3 }}>
+                        Appointment was successfully booked
+                    </Typography>
+                </>}
             <Card ref={invoiceRef} elevation={3} style={{ padding: '15px', maxWidth: '250px', margin: 'auto', backgroundColor: '#fff' }}>
                 {/* QR Code */}
                 <Grid style={{ textAlign: 'center', marginTop: '20px' }}>
-                    <QRCode value={window.location.href} size={180} />
+                    <QRCode value={`${QRCODE_URL}${bookingId}`} size={180} />
                 </Grid>
                 <Grid container spacing={2} style={{ marginTop: '2px' }}>
                     <Grid item xs={12}>
@@ -66,11 +70,13 @@ const GenerateQR = ({ invoiceDetails }) => {
                     <ShareIcon />
                 </IconButton>
             </Grid>
-            <Link to={linkTo}>
-                <Button sx={{ mt: "15px" }} variant="contained" startIcon={<ArrowBackRoundedIcon />}>
-                    Manage Booking
-                </Button>
-            </Link>
+            {!disabledGoBack &&
+                <Link to={linkTo}>
+                    <Button sx={{ mt: "15px" }} variant="contained" startIcon={<ArrowBackRoundedIcon />}>
+                        Manage Booking
+                    </Button>
+                </Link>
+            }
         </>
     );
 };

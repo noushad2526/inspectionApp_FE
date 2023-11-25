@@ -193,6 +193,7 @@ export default function UserPage() {
               <ActionMenu
                 onClickEdit={() => handleEdit(params.row)}
                 onClickDelete={() => handleDialog(params.row)}
+                disableView
               />
             </Stack>
           </>

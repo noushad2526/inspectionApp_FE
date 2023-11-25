@@ -49,7 +49,7 @@ function ActionMenu({ onClickEdit, onClickDelete, onClickView, disableEdit, disa
 
                 {!disableView && <MenuItem sx={{ color: 'info.main' }} onClick={onClickView}>
                     <Iconify icon={'eva:eye-outline'} sx={{ mr: 2 }} />
-                    View
+                    View QR
                 </MenuItem>}
 
                 {!disableDelete && <MenuItem sx={{ color: 'error.main' }} onClick={onClickDelete}>

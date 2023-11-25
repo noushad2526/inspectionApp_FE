@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Card, CardHeader, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, Grid } from '@mui/material';
+import { Card, CardHeader, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, Grid, Link } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
@@ -7,10 +7,9 @@ import TaskAltRoundedIcon from '@mui/icons-material/TaskAltRounded';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
 import FormatListNumberedRtlIcon from '@mui/icons-material/FormatListNumberedRtl';
+import NearMeIcon from '@mui/icons-material/NearMe';
 
 const GenerateInvoice = ({ invoiceDetails }) => {
-
-    const { registeredVehicle } = invoiceDetails;
 
     useEffect(() => {
         // Disable scrolling when the component mounts
@@ -56,7 +55,7 @@ const GenerateInvoice = ({ invoiceDetails }) => {
                                             </Typography>
                                         </Box>
                                     </TableCell>
-                                    <TableCell align="right">Your Name</TableCell>
+                                    <TableCell align="right">{invoiceDetails?.fullName}</TableCell>
                                 </TableRow>
                                 {/* vehicleType */}
                                 <TableRow>
@@ -70,7 +69,7 @@ const GenerateInvoice = ({ invoiceDetails }) => {
                                             </Typography>
                                         </Box>
                                     </TableCell>
-                                    <TableCell align="right">Private Vehicle</TableCell>
+                                    <TableCell align="right">{invoiceDetails?.vehicleType}</TableCell>
                                 </TableRow>
                                 {/* inspectionServiceType */}
                                 <TableRow>
@@ -84,10 +83,10 @@ const GenerateInvoice = ({ invoiceDetails }) => {
                                             </Typography>
                                         </Box>
                                     </TableCell>
-                                    <TableCell align="right">Inspection Servcie Type</TableCell>
+                                    <TableCell align="right">{invoiceDetails?.inspectionServiceType}</TableCell>
                                 </TableRow>
                                 {/* plateNumber */}
-                                {registeredVehicle &&
+                                {invoiceDetails?.registeredVehicle &&
                                     <TableRow>
                                         <TableCell>
                                             <Box display="flex" alignItems="center">
@@ -99,10 +98,10 @@ const GenerateInvoice = ({ invoiceDetails }) => {
                                                 </Typography>
                                             </Box>
                                         </TableCell>
-                                        <TableCell align="right">Plate Number</TableCell>
+                                        <TableCell align="right">{invoiceDetails?.plateNumber}</TableCell>
                                     </TableRow>}
                                 {/* certificateNumber */}
-                                {!registeredVehicle &&
+                                {!invoiceDetails?.registeredVehicle &&
                                     <TableRow>
                                         <TableCell>
                                             <Box display="flex" alignItems="center">
@@ -114,10 +113,10 @@ const GenerateInvoice = ({ invoiceDetails }) => {
                                                 </Typography>
                                             </Box>
                                         </TableCell>
-                                        <TableCell align="right">Certificate Number</TableCell>
+                                        <TableCell align="right">{invoiceDetails?.certificateNumber}</TableCell>
                                     </TableRow>}
                                 {/* inspectionCenter */}
-                                <TableRow>
+                                <TableRow >
                                     <TableCell>
                                         <Box display="flex" alignItems="center">
                                             <LocationOnRoundedIcon fontSize='small' />
@@ -128,7 +127,17 @@ const GenerateInvoice = ({ invoiceDetails }) => {
                                             </Typography>
                                         </Box>
                                     </TableCell>
-                                    <TableCell align="right">Sahara Inspection Center</TableCell>
+                                    <TableCell align="right">
+                                        <a
+                                            href="https://www.google.com/maps/place/24%C2%B049'10.5%22N+46%C2%B047'01.6%22E/@24.8195801,46.781189,17z/data=!3m1!4b1!4m4!3m3!8m2!3d24.8195801!4d46.7837639?hl=en&entry=ttu"
+                                            target="_blank"
+                                            rel="noopener noreferrer" // recommended for security reasons
+                                            style={{ textDecoration: 'none' }}
+                                        >
+                                            {invoiceDetails?.inspectionCenter}
+                                            {invoiceDetails?.inspectionCenter && <NearMeIcon fontSize='small' />}
+                                        </a>
+                                    </TableCell>
                                 </TableRow>
                                 {/* inspectionDateAndTime */}
                                 <TableRow>
@@ -142,7 +151,7 @@ const GenerateInvoice = ({ invoiceDetails }) => {
                                             </Typography>
                                         </Box>
                                     </TableCell>
-                                    <TableCell align="right">Inspection Date & Time</TableCell>
+                                    <TableCell align="right">{invoiceDetails?.inspectionDateAndTime}</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>

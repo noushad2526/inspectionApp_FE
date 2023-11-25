@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,12 @@ import {
   Container,
   Typography,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Slide,
+  Grid,
 } from '@mui/material';
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
@@ -30,6 +36,8 @@ import { doLogout } from '../../services';
 import { deleteUser, getAllUser } from '../../services/api-service/UserController';
 import ActionMenu from '../../components/menu/ActionMenu';
 import { getAllBooking } from '../../services/api-service/BookingController';
+import GenerateQR from '../../components/invoice/GenerateQR';
+import GenerateInvoice from '../../components/invoice/GenerateInvoice';
 
 
 export default function ManageBookingsPage() {
@@ -39,11 +47,22 @@ export default function ManageBookingsPage() {
   const [bookings, setBookings] = useState([]);
   const [reload, setReload] = useState(false);
   const [bookingId, setBookingId] = useState();
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [userName, setUserName] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
   const mobileView = useResponsive('up', 'md');
+
+  // view dialog
+  const [openView, setOpenView] = useState(false);
+
+  const Transition = React.forwardRef((props, ref) => {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
+
+  const handleCancel = () => {
+    setOpenView(false);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,13 +95,14 @@ export default function ManageBookingsPage() {
   }
 
   const handleView = (row) => {
-    console.log(row);
+    setOpenView(true);
+    setBookingId(row.id);
   }
 
   const handleDialog = (user) => {
     // setBookingId({ id: user.id });
     // setUserName(user.fullName);
-    setOpenDialog(true);
+    setOpenDeleteDialog(true);
   }
 
   const handleConfirmation = async (confirmed) => {
@@ -101,16 +121,31 @@ export default function ManageBookingsPage() {
     //   toast.error(error.response.data.message);
     // } finally {
     //   setReload(true);
-    //   setOpenDialog(false);
+    //   setOpenDeleteDialog(false);
     //   setIsLoading(false);
     // }
-    setOpenDialog(false);
+    setOpenDeleteDialog(false);
   };
 
   const columns = [
     { field: 'id', headerName: 'Booking Id', width: 130 },
     { field: 'email', headerName: 'E-mail', width: 250 },
-    { field: 'inspectionDateAndTime', headerName: 'Inspection Scheduled', width: 180 },
+    {
+      field: 'inspectionDateAndTime',
+      headerName: 'Inspection Scheduled',
+      width: 180,
+      valueGetter: (params) => {
+        const timestamp = params.row.inspectionDateAndTime;
+        const formattedDate = new Date(timestamp).toLocaleString(undefined, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        });
+        return formattedDate;
+      },
+    },
     {
       field: "Actions",
       width: 180,
@@ -124,7 +159,7 @@ export default function ManageBookingsPage() {
             </MenuItem>
 
             <MenuItem sx={{ color: 'info.main' }}>
-              <Tooltip title="Share Qr Code">
+              <Tooltip title="View Qr Code">
                 <Iconify icon={'eva:eye-outline'} onClick={() => handleView(params.row)} />
               </Tooltip>
             </MenuItem>
@@ -144,8 +179,16 @@ export default function ManageBookingsPage() {
     {
       field: 'email',
       headerName: 'Inspections Details',
-      flex: 1, // Use flexGrow to make it responsive
+      flex: 1,
       renderCell: ({ row: { id, email, inspectionDateAndTime } }) => {
+        const formattedDate = new Date(inspectionDateAndTime).toLocaleString(undefined, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        });
+
         return (
           <>
             <Stack direction="column" ml={2}>
@@ -163,7 +206,7 @@ export default function ManageBookingsPage() {
                 <br />
                 {email}
                 <br />
-                {inspectionDateAndTime}
+                {formattedDate}
               </Typography>
             </Stack>
           </>
@@ -185,9 +228,9 @@ export default function ManageBookingsPage() {
               />
             </Stack>
           </>
-        )
-      }
-    }
+        );
+      },
+    },
   ];
 
   return (
@@ -217,7 +260,7 @@ export default function ManageBookingsPage() {
           :
           <SkeletonProgress />
         }
-        {openDialog && (
+        {openDeleteDialog && (
           <ConfirmationDialog
             DialogContent={
               <div>
@@ -231,6 +274,24 @@ export default function ManageBookingsPage() {
             onClose={handleConfirmation}
           />
         )}
+        {openView && <Dialog maxWidth="xs" TransitionComponent={Transition} keepMounted open={openView}>
+          <DialogTitle>Booking Id: {bookingId}</DialogTitle>
+          <DialogContent dividers >{
+            (<>
+              <Grid style={{ textAlign: 'center' }}>
+                <GenerateQR
+                  invoiceDetails={{ bookingId }}
+                  disabledGoBack
+                  disabledTitle
+                />
+              </Grid>
+            </>)
+          }
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCancel}>Cancel</Button>
+          </DialogActions>
+        </Dialog>}
       </Container>
     </>
   );

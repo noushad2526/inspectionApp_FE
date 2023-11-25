@@ -34,7 +34,6 @@ import dayjs from 'dayjs';
 // formIk
 import { Formik } from "formik";
 import * as yup from "yup";
-import { registerUser, updateUser } from "../../../services/api-service";
 import LoadingLayer from "../../../components/custom-progress/global-progress/LoadingProgress";
 import { MenuProps, inspectionServiceType, registrationCountry, registrationType } from "./Data";
 import { scheduleBooking } from "../../../services/api-service/BookingController";
@@ -106,9 +105,6 @@ export default function AddBookingForm() {
         //
         const bookingDetails = getBookingRequest(formDetails);
 
-        console.log(bookingDetails);
-
-        // // api call
         // api call
         try {
             if (bookingDetails.error) {
@@ -120,7 +116,7 @@ export default function AddBookingForm() {
                 console.log(scheduleBookingResponse);
                 toast.success(scheduleBookingResponse.message);
                 document.getElementById("bookingForm").reset(initialValues);
-                navigate(-1);
+                navigate("/admin/generate-invoice", { state: { bookingId: scheduleBookingResponse.id } });
             }
         } catch (error) {
             toast.warn(error.response.data.message);
