@@ -34,7 +34,7 @@ import dayjs from 'dayjs';
 import { Formik } from "formik";
 import * as yup from "yup";
 //
-import { updateUser } from "../../../services/api-service";
+import { updateBooking, updateUser } from "../../../services/api-service";
 import LoadingLayer from "../../../components/custom-progress/global-progress/LoadingProgress";
 import { MenuProps, inspectionServiceType, registrationCountry, registrationType } from "./Data";
 
@@ -64,6 +64,10 @@ export default function UpdateBookingForm() {
     const [inspectionTime, setInspectionTime] = useState(dayjs(bookingData.inspectionDateAndTime));
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    useEffect(() => {
+        console.log(bookingData);
+      }, []);
 
     const initialValues = {
         // personal information
@@ -100,7 +104,7 @@ export default function UpdateBookingForm() {
         const inspectionDate = dayjs(formDetails.inspectionDateAndTime);
 
         // Now you can format it
-        const formattedDate = inspectionDate.format('ddd MMM D YYYY HH:mm:ss  (IST)');
+        const formattedDate = inspectionDate.format('ddd MMM D YYYY HH:mm:ss [GMT]ZZ (IST)');
         formDetails.inspectionDateAndTime = formattedDate;
         if (!validateValues(formDetails)) return null;
         return formDetails;
@@ -144,24 +148,24 @@ export default function UpdateBookingForm() {
         console.log(bookingDetails);
 
         // api call
-        // try {
-        //     if (bookingDetails.error) {
-        //         toast.error(bookingDetails.error);
-        //     } else {
-        //         setIsLoading(true);
-        //         // register user
-        //         const scheduleBookingResponse = await updateBooking(bookingDetails);
-        //         console.log(scheduleBookingResponse);
-        //         toast.success(scheduleBookingResponse.message);
-        //         document.getElementById("bookingForm").reset(initialValues);
-        //         navigate(-1);
-        //     }
-        // } catch (error) {
-        //     toast.warn(error.response.data.message);
-        //     console.log(error);
-        // } finally {
-        //     setIsLoading(false);
-        // }
+        try {
+            if (bookingDetails.error) {
+                toast.error(bookingDetails.error);
+            } else {
+                setIsLoading(true);
+                // register user
+                const scheduleBookingResponse = await updateBooking(bookingDetails);
+                console.log(scheduleBookingResponse);
+                toast.success(scheduleBookingResponse.message);
+                document.getElementById("bookingForm").reset(initialValues);
+                navigate(-1);
+            }
+        } catch (error) {
+            toast.warn(error.response.data.message);
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleLicenseStatus = (event, registeredVehicle) => {

@@ -70,7 +70,7 @@ export default function ManageBookingsPage() {
         setIsLoading(true);
         // Admin block
         const data = await getAllBooking();
-
+        console.log(data);
         if (data.length === 0) {
           toast.warn("No bookings Found");
         }
