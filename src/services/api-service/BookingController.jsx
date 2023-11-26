@@ -4,9 +4,25 @@ import axios from "axios";
 import { getHeader, getHeaderWithoutToken } from "..";
 
 export const scheduleBooking = (bookingDetails) => {
-    return axios.post("/land-auth/scheduleBooking", JSON.stringify(bookingDetails), getHeader()).then((response) => response.data);
+    return axios.post("/vehicle/scheduleBooking", JSON.stringify(bookingDetails), getHeader()).then((response) => response.data);
 };
 
 export const getAllBooking = () => {
-    return axios.get("/land-auth/getAllBooking", getHeader()).then((response) => response.data);
+    return axios.get("/vehicle/getAllBooking", getHeader()).then((response) => response.data);
+};
+
+export const getBooking = (bookingId) => {
+    return axios.get(`/vehicle/getBookingDetailsById/${bookingId}`, getHeader()).then((response) => response.data);
+};
+
+export const updateBooking = (bookingDetails) => {
+    return axios.post("/vehicle/updateBooking", JSON.stringify(bookingDetails), getHeader()).then((response) => response.data);
+}
+
+export const deleteBooking = (bookingId) => {
+    return axios.post("/vehicle/deleteBooking", JSON.stringify(bookingId), getHeader()).then((response) => response.data);
+}
+
+export const countOfBookings = () => {
+    return axios.get("/vehicle/countOfBookings", getHeader()).then((response) => response.data);
 };

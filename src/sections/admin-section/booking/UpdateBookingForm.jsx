@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from "react-router-dom";
 // @mui
 import {
     Card,
@@ -34,9 +34,10 @@ import dayjs from 'dayjs';
 // formIk
 import { Formik } from "formik";
 import * as yup from "yup";
+import { registerUser, updateUser } from "../../../services/api-service";
 import LoadingLayer from "../../../components/custom-progress/global-progress/LoadingProgress";
-import { MenuProps, inspectionServiceType, registrationCountry, registrationType } from "./Data";
-import { scheduleBooking } from "../../../services/api-service/BookingController";
+import { MenuProps, inspectionServiceType, registrationCountry, registrationType, isValidRegistrationType, isInspectionServiceType } from "./Data";
+import { getBooking, scheduleBooking, updateBooking } from "../../../services/api-service/BookingController";
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -50,11 +51,15 @@ const StyledTypography = styled(Typography)(() => ({
     alignItems: "center",
 }));
 
-export default function AddBookingForm() {
+export default function UpdateBookingForm() {
 
+    const location = useLocation();
+    const [bookingData, setBookingData] = useState(location.state);
+    const [bookingApi, setBookingApi] = useState();
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const [reload, setReload] = useState(false);
 
     const tomorrow = dayjs().add(1, 'day');
     const [isRegisteredVehicle, setIsRegisteredVehicle] = useState(true);
@@ -62,41 +67,81 @@ export default function AddBookingForm() {
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+    useEffect(() => {
+        console.log(bookingData);
+        if (!bookingData.isRegisteredVehicle) {
+            setIsRegisteredVehicle(false);
+        }
+        // const fetchData = async () => {
+        //   try {
+        //     setIsLoading(true);
+        //     // Admin block
+        //     const data = await getBooking(bookingData.id);
+        //     console.log(data);
+        //     if (data.length === 0) {
+        //       toast.warn("No Booking Found");
+        //     }
+        //     setBookingApi(data);
+        //   } catch (error) {
+        //     console.log(error);
+        //   } finally {
+        //     setIsLoading(false);
+        //     setReload(false);
+        //   }
+        // };
+        // fetchData();
+        // eslint-disable-next-line
+    }, [reload]);
+
     const initialValues = {
         // personal information
-        fullName: "",
-        email: "",
-        mobileNumber: "",
+        id: bookingData.id || "",
+        fullName: bookingData.fullName || "",
+        email: bookingData.email || "",
+        mobileNumber: bookingData.mobileNumber || "",
         // vehicale information
-        registeredVehicle: true,
-        registrationCountry: "Saudi Arabia",
-        plateNumber: "",
-        registrationType: "Private Vehicle",
-        certificateNumber: "", // only for unregistere vehicle
+        registeredVehicle: bookingData.isRegisteredVehicle || true,
+        registrationCountry: bookingData.registrationCountry || "Saudi Arabia",
+        plateNumber: bookingData.plateNumber || "",
+        registrationType: isValidRegistrationType(bookingData.registrationType)
+            ? bookingData.registrationType
+            : 'Private Vehicle',
+        certificateNumber: bookingData.certificateNumber || "", // only for unregistere vehicle
         // inspection time
-        inspectionDateAndTime: inspectionTime,
+        inspectionDateAndTime:
+            inspectionTime,
         // service center
         vehicleType: "Private Vehicle",
-        inspectionServiceType: "Periodic Inspection Service",
+        inspectionServiceType: isInspectionServiceType(bookingData.registrationType)
+            ? bookingData.registrationType : "Periodic Inspection Service",
         region: "Riyadh",
         inspectionCenter: "Sahara Inspection Center"
     };
+
+    const timestamp = bookingData.inspectionDateAndTime;
+    const formattedDate = new Date(timestamp).toLocaleString(undefined, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        });
 
     // modify request to make api call
     const getBookingRequest = (formDetails) => {
         if (isRegisteredVehicle) {
             formDetails.registeredVehicle = true;
-            delete formDetails.certificateNumber;
+            // delete formDetails.certificateNumber;
         } else {
             formDetails.registeredVehicle = false;
-            delete formDetails.registrationCountry;
-            delete formDetails.plateNumber;
-            delete formDetails.registrationType;
+            // delete formDetails.registrationCountry;
+            // delete formDetails.plateNumber;
+            // delete formDetails.registrationType;
         }
         const inspectionDate = dayjs(formDetails.inspectionDateAndTime);
 
         // Now you can format it
-        const formattedDate = inspectionDate.format('ddd MMM D YYYY HH:mm:ss [GMT]ZZ (IST)');
+        const formattedDate = inspectionDate.format('ddd MMM D YYYY HH:mm:ss  (IST)');
         formDetails.inspectionDateAndTime = formattedDate;
         return formDetails;
     };
@@ -106,6 +151,7 @@ export default function AddBookingForm() {
         const bookingDetails = getBookingRequest(formDetails);
 
         console.log(bookingDetails);
+
         // api call
         try {
             if (bookingDetails.error) {
@@ -113,11 +159,11 @@ export default function AddBookingForm() {
             } else {
                 setIsLoading(true);
                 // register user
-                const scheduleBookingResponse = await scheduleBooking(bookingDetails);
+                const scheduleBookingResponse = await updateBooking(bookingDetails);
                 console.log(scheduleBookingResponse);
                 toast.success(scheduleBookingResponse.message);
                 document.getElementById("bookingForm").reset(initialValues);
-                navigate("/admin/generate-invoice", { state: { bookingId: scheduleBookingResponse.id } });
+                navigate(-1);
             }
         } catch (error) {
             toast.warn(error.response.data.message);
@@ -139,7 +185,7 @@ export default function AddBookingForm() {
             <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
-                        Schedule Booking
+                        Update Booking
                     </Typography>
                 </Stack>
                 <Stack spacing={3}>
@@ -201,6 +247,7 @@ export default function AddBookingForm() {
                                                 error={!!touched.email && !!errors.email}
                                                 helperText={touched.email && errors.email}
                                                 sx={{ gridColumn: "span 1" }}
+                                                disabled
                                             />
                                             <TextField
                                                 fullWidth
@@ -502,7 +549,7 @@ export default function AddBookingForm() {
                                     </Card>
                                     <Box display="flex" justifyContent="end" mt="20px">
                                         <Button type="submit" color="secondary" variant="contained">
-                                            Update Booking
+                                            Update
                                         </Button>
                                     </Box>
                                 </form>

@@ -13,7 +13,9 @@ import { getUserDetails } from '../../services/storage-service';
 import { AppWidgetSummary } from '../../sections/admin-section/home';
 // componenet
 import SkeletonProgress from '../../components/custom-progress/SkeletonProgress';
-import { ROLE_ADMIN } from '../../services/constants';
+import { ROLE_ADMIN, ROLE_USER } from '../../services/constants';
+import { countOfAllModules } from '../../services/api-service/UserController';
+import { countOfBookings } from '../../services/api-service/BookingController';
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -48,34 +50,29 @@ export default function DashboardAppPage() {
 
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  // useEffect(() => {
-  // const fetchData = async () => {
+  useEffect(() => {
+  const fetchData = async () => {
 
-  // try {
-  // setIsLoading(true);
-  // if (userRole === ROLE_ADMIN) {
-  //   const adminCardValues = await countOfAllModules();
-  //   setCardValues(adminCardValues);
-  // }
-  // else if (userRole === ROLE_ORGANIZATION) {
-  //   const organizationCardValues = await countOfOrganizationModule(loggedInUser.id);
-  //   setCardValues(organizationCardValues);
-  // } else if (userRole === ROLE_PROJECT) {
-  //   console.log(loggedInUser);
-  //   const projectCardValues = await countOfProjectModule(loggedInUser.id);
-  //   console.log(projectCardValues);
-  //   setCardValues(projectCardValues);
-  // }
-  // } catch (error) {
-  //   console.log(error);
-  // } finally {
-  //   setIsLoading(false);
-  // }
-  // };
+  try {
+  setIsLoading(true);
+  if (userRole === ROLE_ADMIN) {
+    const adminCardValues = await countOfAllModules();
+    setCardValues(adminCardValues);
+  }
+  else if (userRole === ROLE_USER) {
+    const userCardValues = await countOfBookings();
+    setCardValues(userCardValues);
+  } 
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setIsLoading(false);
+  }
+  };
 
-  // fetchData();
-  // // eslint-disable-next-line
-  // }, []);
+  fetchData();
+  // eslint-disable-next-line
+  }, []);
 
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -93,10 +90,10 @@ export default function DashboardAppPage() {
           {userRole === ROLE_ADMIN && (
             <Grid item xs={12} sm={6} md={3} ml={2} >
               {!isLoading ? (
-                <Link to={`/${loggedInUserRoute}/organization`} style={linkStyle}>
+                <Link to={`/${loggedInUserRoute}/user`} style={linkStyle}>
                   <AppWidgetSummary
-                    title="Organizations"
-                    total={cardValues.organizations === 0 ? "0" : cardValues.organizations}
+                    title="Users"
+                    total={cardValues.users === 0 ? "0" : cardValues.users}
                     color="error"
                     icon={<CorporateFareRoundedIcon width={24} height={24} />}
                   />
@@ -108,12 +105,12 @@ export default function DashboardAppPage() {
             </Grid>
           )}
 
-          {userRole === ROLE_ADMIN && (
+          {(userRole === ROLE_ADMIN || userRole === ROLE_USER) && (
             <Grid item xs={12} sm={6} md={3} ml={2} >
               {!isLoading ? (
-                <Link to={`/${loggedInUserRoute}/project`} style={linkStyle}>
-                  <AppWidgetSummary title="Individual Projects"
-                    total={cardValues.individualProjects === 0 ? "0" : cardValues.individualProjects}
+                <Link to={`/${loggedInUserRoute}/manage-bookings`} style={linkStyle}>
+                  <AppWidgetSummary title="Bookings"
+                    total={cardValues.bookings === 0 ? "0" : cardValues.bookings}
                     color="info"
                     icon={<GridOnRoundedIcon width={24} height={24} />}
                   />
@@ -124,65 +121,6 @@ export default function DashboardAppPage() {
                 )}
             </Grid>
           )}
-          {/* 
-          {(userRole === ROLE_ADMIN || userRole === ROLE_ORGANIZATION) && (
-            <Grid item xs={12} sm={6} md={3} ml={2} >
-              {!isLoading ? (
-                <Link to={`/${loggedInUserRoute}/project`} style={linkStyle}>
-                  <AppWidgetSummary title={userRole === ROLE_ADMIN ? "Total Projects" : "Projects"}
-                    total={cardValues.projects === 0 ? "0" : cardValues.projects}
-                    color="warning"
-                    icon={<GridOnRoundedIcon width={24} height={24} />}
-                  />
-                </Link>
-              ) :
-                (
-                  <SkeletonProgress skeletonHeight={240} linearProgressWidth='120px' linearProgressMT="55%" />
-                )}
-            </Grid>
-          )}
-
-          {(
-            userRole === ROLE_ADMIN ||
-            userRole === ROLE_ORGANIZATION ||
-            (userRole === ROLE_PROJECT && !isPlotManagement)
-          ) && (
-              <Grid item xs={12} sm={6} md={3} ml={2} >
-                {!isLoading ? (
-                  <Link to={`/${loggedInUserRoute}/flat`} style={linkStyle}>
-                    <AppWidgetSummary title="Flats"
-                      total={cardValues.flats === 0 ? "0" : cardValues.flats}
-                      color="black"
-                      icon={<ApartmentRoundedIcon width={24} height={24} />}
-                    />
-                  </Link>
-                ) :
-                  (
-                    <SkeletonProgress skeletonHeight={240} linearProgressWidth='120px' linearProgressMT="55%" />
-                  )}
-              </Grid>
-            )}
-
-          {(
-            userRole === ROLE_ADMIN ||
-            userRole === ROLE_ORGANIZATION ||
-            (userRole === ROLE_PROJECT && isPlotManagement)
-          ) && (
-              <Grid item xs={12} sm={6} md={3} ml={2} >
-                {!isLoading ? (
-                  <Link to={`/${loggedInUserRoute}/plot`} style={linkStyle}>
-                    <AppWidgetSummary title="Plots"
-                      total={cardValues.plots === 0 ? "0" : cardValues.plots}
-                      color="success"
-                      icon={<WidgetsRoundedIcon width={24} height={24} />}
-                    />
-                  </Link>
-                ) :
-                  (
-                    <SkeletonProgress skeletonHeight={240} linearProgressWidth='120px' linearProgressMT="55%" />
-                  )}
-              </Grid>
-            )} */}
         </ResponsiveBox>
       </Container>
     </>

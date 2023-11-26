@@ -35,7 +35,7 @@ import { doLogout } from '../../services';
 // api
 import { deleteUser, getAllUser } from '../../services/api-service/UserController';
 import ActionMenu from '../../components/menu/ActionMenu';
-import { getAllBooking } from '../../services/api-service/BookingController';
+import { deleteBooking, getAllBooking } from '../../services/api-service/BookingController';
 import GenerateQR from '../../components/invoice/GenerateQR';
 import GenerateInvoice from '../../components/invoice/GenerateInvoice';
 
@@ -100,30 +100,30 @@ export default function ManageBookingsPage() {
   }
 
   const handleDialog = (user) => {
-    // setBookingId({ id: user.id });
-    // setUserName(user.fullName);
+    setBookingId({ id: user.id });
+    setUserName(user.fullName);
     setOpenDeleteDialog(true);
   }
 
   const handleConfirmation = async (confirmed) => {
-    // try {
-    //   if (confirmed) {
-    //     setIsLoading(true);
-    //     await deleteUser(bookingId)
-    //     toast.success("User Deleted Successfully");
-    //     if (getUserDetails().id === bookingId.id) {
-    //       doLogout();
-    //       navigate('/login');
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    //   toast.error(error.response.data.message);
-    // } finally {
-    //   setReload(true);
-    //   setOpenDeleteDialog(false);
-    //   setIsLoading(false);
-    // }
+    try {
+      if (confirmed) {
+        setIsLoading(true);
+        await deleteBooking(bookingId);
+        toast.success("Booking Deleted Successfully");
+        if (getUserDetails().id === bookingId.id) {
+          doLogout();
+          navigate('/login');
+        }
+      } 
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    } finally {
+      setReload(true);
+      setOpenDeleteDialog(false);
+      setIsLoading(false);
+    }
     setOpenDeleteDialog(false);
   };
 

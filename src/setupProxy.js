@@ -2,7 +2,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const proxies = [
     {
-        context: '/land-auth',
+        context: '/vehicle',
         target: 'http://localhost:8088'
     },
 ];

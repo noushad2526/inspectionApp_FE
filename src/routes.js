@@ -19,6 +19,7 @@ import { getUserDetails, isUserPresent } from "./services/storage-service";
 import { ROLE_ADMIN, ROLE_USER } from './services/constants';
 import { verifyUser } from './services';
 import InvoicePage from './pages/admin-pages/InvoicePage';
+import UpdateBookingForm from './sections/admin-section/booking/UpdateBookingForm';
 
 // ----------------------------------------------------------------------
 
@@ -62,6 +63,7 @@ export default function Router() {
           children: [
             { path: '', element: <ManageBookingsPage /> },
             { path: 'add-booking', element: <AddBookingForm /> },
+            { path: 'edit-booking', element: <UpdateBookingForm /> },
           ]
         },
         { path: 'generate-invoice', element: <GenerateInvoice /> },
@@ -89,6 +91,7 @@ export default function Router() {
           children: [
             { path: '', element: <ManageBookingsPage /> },
             { path: 'add-booking', element: <AddBookingForm /> },
+            { path: 'edit-booking', element: <UpdateBookingForm /> },
           ]
         },
         { path: 'generate-invoice', element: <GenerateInvoice /> },
