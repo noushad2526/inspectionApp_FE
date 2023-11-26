@@ -113,6 +113,8 @@ export default function UpdateBookingForm() {
     // validation for update
     const validateValues = (formValues) => {
         if (registeredVehicleSchema) {
+            console.log(initialValues.inspectionDateAndTime);
+            console.log(formValues.inspectionDateAndTime);
             if (
                 initialValues.fullName === formValues.fullName
                 && initialValues.mobileNumber === formValues.mobileNumber
@@ -131,6 +133,7 @@ export default function UpdateBookingForm() {
             && initialValues.mobileNumber === formValues.mobileNumber
             && initialValues.registeredVehicle === formValues.registeredVehicle
             && initialValues.plateNumber === formValues.plateNumber
+            
             // && dayjs(initialValues.inspectionDateAndTime) === dayjs(formValues.inspectionDateAndTime)
             && initialValues.inspectionServiceType === formValues.inspectionServiceType
         ) {
