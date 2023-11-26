@@ -18,7 +18,6 @@ import {
     FormHelperText,
     ToggleButtonGroup,
     ToggleButton,
-    Paper,
 } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
@@ -34,10 +33,10 @@ import dayjs from 'dayjs';
 // formIk
 import { Formik } from "formik";
 import * as yup from "yup";
-import { registerUser, updateUser } from "../../../services/api-service";
+//
+import { updateUser } from "../../../services/api-service";
 import LoadingLayer from "../../../components/custom-progress/global-progress/LoadingProgress";
-import { MenuProps, inspectionServiceType, registrationCountry, registrationType, isValidRegistrationType, isInspectionServiceType } from "./Data";
-import { getBooking, scheduleBooking, updateBooking } from "../../../services/api-service/BookingController";
+import { MenuProps, inspectionServiceType, registrationCountry, registrationType } from "./Data";
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -53,98 +52,90 @@ const StyledTypography = styled(Typography)(() => ({
 
 export default function UpdateBookingForm() {
 
-    const location = useLocation();
-    const [bookingData, setBookingData] = useState(location.state);
-    const [bookingApi, setBookingApi] = useState();
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const navigate = useNavigate();
+    const location = useLocation();
+    const bookingData = location.state;
+
     const [isLoading, setIsLoading] = useState(false);
     const [reload, setReload] = useState(false);
 
-    const tomorrow = dayjs().add(1, 'day');
-    const [isRegisteredVehicle, setIsRegisteredVehicle] = useState(true);
-    const [inspectionTime, setInspectionTime] = useState(tomorrow);
+    const [isRegisteredVehicle, setIsRegisteredVehicle] = useState(bookingData.registeredVehicle);
+    const [inspectionTime, setInspectionTime] = useState(dayjs(bookingData.inspectionDateAndTime));
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    useEffect(() => {
-        console.log(bookingData);
-        if (!bookingData.isRegisteredVehicle) {
-            setIsRegisteredVehicle(false);
-        }
-        // const fetchData = async () => {
-        //   try {
-        //     setIsLoading(true);
-        //     // Admin block
-        //     const data = await getBooking(bookingData.id);
-        //     console.log(data);
-        //     if (data.length === 0) {
-        //       toast.warn("No Booking Found");
-        //     }
-        //     setBookingApi(data);
-        //   } catch (error) {
-        //     console.log(error);
-        //   } finally {
-        //     setIsLoading(false);
-        //     setReload(false);
-        //   }
-        // };
-        // fetchData();
-        // eslint-disable-next-line
-    }, [reload]);
-
     const initialValues = {
         // personal information
-        id: bookingData.id || "",
-        fullName: bookingData.fullName || "",
-        email: bookingData.email || "",
-        mobileNumber: bookingData.mobileNumber || "",
+        id: bookingData.id,
+        fullName: bookingData.fullName,
+        email: bookingData.email,
+        mobileNumber: bookingData.mobileNumber,
         // vehicale information
-        registeredVehicle: bookingData.isRegisteredVehicle || true,
-        registrationCountry: bookingData.registrationCountry || "Saudi Arabia",
-        plateNumber: bookingData.plateNumber || "",
-        registrationType: isValidRegistrationType(bookingData.registrationType)
-            ? bookingData.registrationType
-            : 'Private Vehicle',
-        certificateNumber: bookingData.certificateNumber || "", // only for unregistere vehicle
+        registeredVehicle: bookingData.isRegisteredVehicle,
+        registrationCountry: bookingData?.registrationCountry || "Saudi Arabia",
+        plateNumber: bookingData?.plateNumber || "",
+        registrationType: bookingData?.registrationType || "Private Vehicle",
+        certificateNumber: bookingData?.certificateNumber || "",
         // inspection time
-        inspectionDateAndTime:
-            inspectionTime,
+        inspectionDateAndTime: inspectionTime,
         // service center
         vehicleType: "Private Vehicle",
-        inspectionServiceType: isInspectionServiceType(bookingData.registrationType)
-            ? bookingData.registrationType : "Periodic Inspection Service",
+        inspectionServiceType: bookingData.inspectionServiceType,
         region: "Riyadh",
         inspectionCenter: "Sahara Inspection Center"
     };
-
-    const timestamp = bookingData.inspectionDateAndTime;
-    const formattedDate = new Date(timestamp).toLocaleString(undefined, {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-        });
 
     // modify request to make api call
     const getBookingRequest = (formDetails) => {
         if (isRegisteredVehicle) {
             formDetails.registeredVehicle = true;
-            // delete formDetails.certificateNumber;
+            delete formDetails.certificateNumber;
         } else {
             formDetails.registeredVehicle = false;
-            // delete formDetails.registrationCountry;
-            // delete formDetails.plateNumber;
-            // delete formDetails.registrationType;
+            delete formDetails.registrationCountry;
+            delete formDetails.plateNumber;
+            delete formDetails.registrationType;
         }
         const inspectionDate = dayjs(formDetails.inspectionDateAndTime);
 
         // Now you can format it
         const formattedDate = inspectionDate.format('ddd MMM D YYYY HH:mm:ss  (IST)');
         formDetails.inspectionDateAndTime = formattedDate;
+        if (!validateValues(formDetails)) return null;
         return formDetails;
     };
+
+    // validation for update
+    const validateValues = (formValues) => {
+        if (registeredVehicleSchema) {
+            if (
+                initialValues.fullName === formValues.fullName
+                && initialValues.mobileNumber === formValues.mobileNumber
+                && initialValues.registeredVehicle === formValues.registeredVehicle
+                && initialValues.registrationCountry === formValues.registeredVehicle
+                && initialValues.plateNumber === formValues.plateNumber
+                && initialValues.registrationType === formValues.registrationType
+                // && dayjs(initialValues.inspectionDateAndTime) === dayjs(formValues.inspectionDateAndTime)
+                && initialValues.inspectionServiceType === formValues.inspectionServiceType
+            ) {
+                toast.warn("Nothing to Update")
+                return false;
+            }
+        } else if (
+            initialValues.fullName === formValues.fullName
+            && initialValues.mobileNumber === formValues.mobileNumber
+            && initialValues.registeredVehicle === formValues.registeredVehicle
+            && initialValues.plateNumber === formValues.plateNumber
+            // && dayjs(initialValues.inspectionDateAndTime) === dayjs(formValues.inspectionDateAndTime)
+            && initialValues.inspectionServiceType === formValues.inspectionServiceType
+        ) {
+            toast.warn("Nothing to Update")
+            return false;
+        }
+
+        return true;
+    }
 
     const handleFormSubmit = async (formDetails) => {
         //
@@ -153,24 +144,24 @@ export default function UpdateBookingForm() {
         console.log(bookingDetails);
 
         // api call
-        try {
-            if (bookingDetails.error) {
-                toast.error(bookingDetails.error);
-            } else {
-                setIsLoading(true);
-                // register user
-                const scheduleBookingResponse = await updateBooking(bookingDetails);
-                console.log(scheduleBookingResponse);
-                toast.success(scheduleBookingResponse.message);
-                document.getElementById("bookingForm").reset(initialValues);
-                navigate(-1);
-            }
-        } catch (error) {
-            toast.warn(error.response.data.message);
-            console.log(error);
-        } finally {
-            setIsLoading(false);
-        }
+        // try {
+        //     if (bookingDetails.error) {
+        //         toast.error(bookingDetails.error);
+        //     } else {
+        //         setIsLoading(true);
+        //         // register user
+        //         const scheduleBookingResponse = await updateBooking(bookingDetails);
+        //         console.log(scheduleBookingResponse);
+        //         toast.success(scheduleBookingResponse.message);
+        //         document.getElementById("bookingForm").reset(initialValues);
+        //         navigate(-1);
+        //     }
+        // } catch (error) {
+        //     toast.warn(error.response.data.message);
+        //     console.log(error);
+        // } finally {
+        //     setIsLoading(false);
+        // }
     };
 
     const handleLicenseStatus = (event, registeredVehicle) => {

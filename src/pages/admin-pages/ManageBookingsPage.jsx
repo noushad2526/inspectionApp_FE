@@ -99,9 +99,9 @@ export default function ManageBookingsPage() {
     setBookingId(row.id);
   }
 
-  const handleDialog = (user) => {
-    setBookingId({ id: user.id });
-    setUserName(user.fullName);
+  const handleDialog = (booking) => {
+    setBookingId({ id: booking.id });
+    setUserName(booking.id);
     setOpenDeleteDialog(true);
   }
 
@@ -111,16 +111,12 @@ export default function ManageBookingsPage() {
         setIsLoading(true);
         await deleteBooking(bookingId);
         toast.success("Booking Deleted Successfully");
-        if (getUserDetails().id === bookingId.id) {
-          doLogout();
-          navigate('/login');
-        }
-      } 
+        setReload(true);
+      }
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
     } finally {
-      setReload(true);
       setOpenDeleteDialog(false);
       setIsLoading(false);
     }

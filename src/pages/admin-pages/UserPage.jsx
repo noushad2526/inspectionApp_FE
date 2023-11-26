@@ -88,11 +88,11 @@ export default function UserPage() {
           navigate('/login');
         }
       }
+      setReload(true);
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
     } finally {
-      setReload(true);
       setOpenDialog(false);
       setIsLoading(false);
     }

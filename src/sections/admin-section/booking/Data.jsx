@@ -45,13 +45,3 @@ export const inspectionServiceType = [
     { value: 'Periodic Inspection Service' },
     { value: 'Re Inspection Service' },
 ]
-
-export const isValidRegistrationType = (value) => {
-    const validRegistrationTypes = registrationType.map((item) => item.value);
-    return validRegistrationTypes.includes(value);
-  };
-
-  export const isInspectionServiceType = (value) => {
-    const validInspectionServiceTypes = inspectionServiceType.map((item) => item.value);
-    return validInspectionServiceTypes.includes(value);
-  };

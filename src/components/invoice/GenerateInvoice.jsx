@@ -11,6 +11,15 @@ import NearMeIcon from '@mui/icons-material/NearMe';
 
 const GenerateInvoice = ({ invoiceDetails }) => {
 
+    const timestamp = invoiceDetails?.inspectionDateAndTime;
+    const formattedDate = new Date(timestamp).toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+    });
+
     useEffect(() => {
         // Disable scrolling when the component mounts
         document.body.style.overflow = 'hidden';
@@ -151,7 +160,7 @@ const GenerateInvoice = ({ invoiceDetails }) => {
                                             </Typography>
                                         </Box>
                                     </TableCell>
-                                    <TableCell align="right">{invoiceDetails?.inspectionDateAndTime}</TableCell>
+                                    <TableCell align="right">{formattedDate}</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>

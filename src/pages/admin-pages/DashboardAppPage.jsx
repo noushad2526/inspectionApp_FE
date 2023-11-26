@@ -51,27 +51,27 @@ export default function DashboardAppPage() {
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   useEffect(() => {
-  const fetchData = async () => {
+    const fetchData = async () => {
 
-  try {
-  setIsLoading(true);
-  if (userRole === ROLE_ADMIN) {
-    const adminCardValues = await countOfAllModules();
-    setCardValues(adminCardValues);
-  }
-  else if (userRole === ROLE_USER) {
-    const userCardValues = await countOfBookings();
-    setCardValues(userCardValues);
-  } 
-  } catch (error) {
-    console.log(error);
-  } finally {
-    setIsLoading(false);
-  }
-  };
+      try {
+        setIsLoading(true);
+        if (userRole === ROLE_ADMIN) {
+          const adminCardValues = await countOfAllModules();
+          setCardValues(adminCardValues);
+        }
+        else if (userRole === ROLE_USER) {
+          const userCardValues = await countOfBookings();
+          setCardValues(userCardValues);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  fetchData();
-  // eslint-disable-next-line
+    fetchData();
+    // eslint-disable-next-line
   }, []);
 
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ export default function DashboardAppPage() {
   return (
     <>
       <Helmet>
-        <title>Land | {loggedInUser.role}</title>
+        <title>Inspection | {loggedInUser.role}</title>
       </Helmet>
 
       <Container maxWidth="xl" sx={{ mb: 3 }}>

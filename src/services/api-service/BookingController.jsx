@@ -26,3 +26,7 @@ export const deleteBooking = (bookingId) => {
 export const countOfBookings = () => {
     return axios.get("/vehicle/countOfBookings", getHeader()).then((response) => response.data);
 };
+
+export const getBookingDetailsById = (bookingId) => {
+    return axios.get(`/vehicle/getBookingDetailsById/${bookingId}`, getHeaderWithoutToken()).then((response) => response.data);
+};
