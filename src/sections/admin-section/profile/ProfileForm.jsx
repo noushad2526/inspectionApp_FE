@@ -21,7 +21,7 @@ export const ProfileForm = () => {
   return (
     <>
       <Helmet>
-        <title> Land | Profile </title>
+        <title> Sahara | Profile </title>
       </Helmet>
       <Card sx={{ maxWidth: 600, height: 500, margin: '0 auto' }}>
         <CardHeader

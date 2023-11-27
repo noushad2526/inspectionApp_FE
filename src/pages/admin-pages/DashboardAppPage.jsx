@@ -79,7 +79,7 @@ export default function DashboardAppPage() {
   return (
     <>
       <Helmet>
-        <title>Inspection | {loggedInUser.role}</title>
+        <title>Sahara | {loggedInUser.role}</title>
       </Helmet>
 
       <Container maxWidth="xl" sx={{ mb: 3 }}>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
@@ -41,6 +41,7 @@ export default function UserPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const mobileView = useResponsive('up', 'md');
+  const VISIBLE_FIELDS = ['fullName', 'mobileNumber', 'email', 'role', 'Actions'];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -202,6 +203,11 @@ export default function UserPage() {
     }
   ];
 
+  const desktopColumns = React.useMemo(
+    () => columns.filter((column) => VISIBLE_FIELDS.includes(column.field)),
+    [columns],
+  );
+
   return (
     <>
       <Helmet>
@@ -221,7 +227,7 @@ export default function UserPage() {
           <Card style={{ height: 522, width: '100%' }}>
             <StyledDataGrid
               rows={users}
-              columns={mobileView ? columns : mobileColumns}
+              columns={mobileView ? desktopColumns : mobileColumns}
               getRowHeight={() => mobileView ? undefined : 100}
               checkboxSelection={mobileView}
             />

@@ -37,6 +37,7 @@ import * as yup from "yup";
 import LoadingLayer from "../../../components/custom-progress/global-progress/LoadingProgress";
 import { MenuProps, inspectionServiceType, registrationCountry, registrationType } from "./Data";
 import { scheduleBooking } from "../../../services/api-service/BookingController";
+import { getUserDetails } from "../../../services/storage-service";
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -55,6 +56,7 @@ export default function AddBookingForm() {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const userRole = getUserDetails().role;
 
     const tomorrow = dayjs().add(1, 'day');
     const [isRegisteredVehicle, setIsRegisteredVehicle] = useState(true);
@@ -68,7 +70,7 @@ export default function AddBookingForm() {
         email: "",
         mobileNumber: "",
         // vehicale information
-        registeredVehicle: true,
+        registeredVehicle: isRegisteredVehicle,
         registrationCountry: "Saudi Arabia",
         plateNumber: "",
         registrationType: "Private Vehicle",
@@ -104,8 +106,6 @@ export default function AddBookingForm() {
     const handleFormSubmit = async (formDetails) => {
         //
         const bookingDetails = getBookingRequest(formDetails);
-
-        console.log(bookingDetails);
         // api call
         try {
             if (bookingDetails.error) {
@@ -114,10 +114,9 @@ export default function AddBookingForm() {
                 setIsLoading(true);
                 // register user
                 const scheduleBookingResponse = await scheduleBooking(bookingDetails);
-                console.log(scheduleBookingResponse);
                 toast.success(scheduleBookingResponse.message);
                 document.getElementById("bookingForm").reset(initialValues);
-                navigate("/admin/generate-invoice", { state: { bookingId: scheduleBookingResponse.id } });
+                navigate(`/${userRole.toLowerCase()}/generate-invoice`, { state: { bookingId: scheduleBookingResponse.id } });
             }
         } catch (error) {
             toast.warn(error.response.data.message);

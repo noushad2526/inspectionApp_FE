@@ -34,7 +34,7 @@ const GenerateInvoice = ({ invoiceDetails }) => {
     return (
         <>
             <Helmet>
-                <title>Inspection | Invoice</title>
+                <title>Sahara | Invoice</title>
             </Helmet>
             <Box style={{ height: '100vh', overflowY: 'auto', overflowX: 'hidden' }}>
                 <Card sx={{ maxWidth: "600px", margin: "auto" }}>

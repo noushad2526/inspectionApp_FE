@@ -60,7 +60,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Login | </title>
+        <title> Sahara | Login </title>
       </Helmet>
 
       <StyledRoot>

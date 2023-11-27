@@ -1,16 +1,15 @@
 import React from 'react';
-import { DataGrid, GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';
 
-// Define your CustomToolbar component
-const CustomToolbar = () => {
-    return (
-        <GridToolbarContainer>
-            <GridToolbarFilterButton />
-            <GridToolbarExport />
-        </GridToolbarContainer>
-    );
-}
+// // Define your CustomToolbar component
+// const CustomToolbar = () => {
+//     return (
+//         <GridToolbarContainer>
+//             <GridToolbarExport />
+//         </GridToolbarContainer>
+//     );
+// }
 
 // Define your StyledDataGrid component
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
@@ -30,14 +29,22 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 StyledDataGrid.defaultProps = {
     checkboxSelection: true,
     disableRowSelectionOnClick: true,
+    disableColumnFilter: true,
+    disableColumnSelector: true,
+    disableDensitySelector: true,
     rowHeight: 75,
     slots: {
-        toolbar: CustomToolbar
+        toolbar: GridToolbar,
     },
     initialState: {
-        pagination: { paginationModel: { pageSize: 5 } },
+        pagination: { pageSize: 5 },
     },
     pageSizeOptions: [5, 10, 25],
+    slotProps: {
+        toolbar: {
+            showQuickFilter: true,
+        },
+    },
 };
 
 export default StyledDataGrid;

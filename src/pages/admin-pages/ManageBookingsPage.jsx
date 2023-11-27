@@ -52,6 +52,7 @@ export default function ManageBookingsPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const mobileView = useResponsive('up', 'md');
+  const VISIBLE_FIELDS = ['id', 'email', 'Actions'];
 
   // view dialog
   const [openView, setOpenView] = useState(false);
@@ -68,9 +69,7 @@ export default function ManageBookingsPage() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        // Admin block
         const data = await getAllBooking();
-        console.log(data);
         if (data.length === 0) {
           toast.warn("No bookings Found");
         }
@@ -173,7 +172,7 @@ export default function ManageBookingsPage() {
 
   const mobileColumns = [
     {
-      field: 'email',
+      field: 'id',
       headerName: 'Inspections Details',
       flex: 1,
       renderCell: ({ row: { id, email, inspectionDateAndTime } }) => {
@@ -229,10 +228,15 @@ export default function ManageBookingsPage() {
     },
   ];
 
+  const desktopColumns = React.useMemo(
+    () => columns.filter((column) => VISIBLE_FIELDS.includes(column.field)),
+    [columns],
+  );
+
   return (
     <>
       <Helmet>
-        <title> Inspection | Booking </title>
+        <title> Sahara | Booking </title>
       </Helmet>
 
       <Container>
@@ -248,7 +252,7 @@ export default function ManageBookingsPage() {
           <Card style={{ height: 522, width: '100%' }}>
             <StyledDataGrid
               rows={bookings}
-              columns={mobileView ? columns : mobileColumns}
+              columns={mobileView ? desktopColumns : mobileColumns}
               getRowHeight={() => mobileView ? undefined : 100}
               checkboxSelection={mobileView}
             />

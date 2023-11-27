@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import QRCode from 'qrcode.react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Typography, Grid, IconButton, Card, Button } from '@mui/material';
 import TaskAltRoundedIcon from '@mui/icons-material/TaskAltRounded';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
@@ -25,7 +26,7 @@ const GenerateQR = ({ invoiceDetails, disabledTitle = false, disabledGoBack = fa
         html2canvas(invoiceRef.current).then((canvas) => {
             const link = document.createElement('a');
             link.href = canvas.toDataURL('image/png');
-            link.download = 'movie_invoice.png';
+            link.download = `Sahara_bookingQR[${bookingId}].png`;
             link.click();
         });
     };
@@ -33,7 +34,7 @@ const GenerateQR = ({ invoiceDetails, disabledTitle = false, disabledGoBack = fa
     const shareInvoice = () => {
         html2canvas(invoiceRef.current).then((canvas) => {
             canvas.toBlob((blob) => {
-                const file = new File([blob], 'movie_invoice.png', { type: 'image/png' });
+                const file = new File([blob], `Sahara_bookingQR[${bookingId}].png`, { type: 'image/png' });
                 navigator.share({ files: [file] });
             }, 'image/png');
         });
@@ -41,6 +42,9 @@ const GenerateQR = ({ invoiceDetails, disabledTitle = false, disabledGoBack = fa
 
     return (
         <>
+            <Helmet>
+                <title>Sahara | Invoice</title>
+            </Helmet>
             {!disabledTitle &&
                 <>
                     <TaskAltRoundedIcon sx={{ fontSize: '3rem', marginRight: 2, color: '#00FF00' }} />

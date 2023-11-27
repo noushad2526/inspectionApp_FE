@@ -34,9 +34,10 @@ import dayjs from 'dayjs';
 import { Formik } from "formik";
 import * as yup from "yup";
 //
-import { updateBooking, updateUser } from "../../../services/api-service";
+import { updateBooking } from "../../../services/api-service";
 import LoadingLayer from "../../../components/custom-progress/global-progress/LoadingProgress";
 import { MenuProps, inspectionServiceType, registrationCountry, registrationType } from "./Data";
+import { getUserDetails } from "../../../services/storage-service";
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -55,6 +56,7 @@ export default function UpdateBookingForm() {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const navigate = useNavigate();
     const location = useLocation();
+    const userRole = getUserDetails().role;
     const bookingData = location.state;
 
     const [isLoading, setIsLoading] = useState(false);
@@ -67,7 +69,7 @@ export default function UpdateBookingForm() {
 
     useEffect(() => {
         console.log(bookingData);
-      }, []);
+    }, []);
 
     const initialValues = {
         // personal information
@@ -76,7 +78,7 @@ export default function UpdateBookingForm() {
         email: bookingData.email,
         mobileNumber: bookingData.mobileNumber,
         // vehicale information
-        registeredVehicle: bookingData.isRegisteredVehicle,
+        registeredVehicle: isRegisteredVehicle,
         registrationCountry: bookingData?.registrationCountry || "Saudi Arabia",
         plateNumber: bookingData?.plateNumber || "",
         registrationType: bookingData?.registrationType || "Private Vehicle",
@@ -106,23 +108,26 @@ export default function UpdateBookingForm() {
         // Now you can format it
         const formattedDate = inspectionDate.format('ddd MMM D YYYY HH:mm:ss [GMT]ZZ (IST)');
         formDetails.inspectionDateAndTime = formattedDate;
+
         if (!validateValues(formDetails)) return null;
         return formDetails;
     };
 
     // validation for update
     const validateValues = (formValues) => {
-        if (registeredVehicleSchema) {
-            console.log(initialValues.inspectionDateAndTime);
-            console.log(formValues.inspectionDateAndTime);
+        console.log(formValues.inspectionDateAndTime)
+        console.log(initialValues.inspectionDateAndTime.toString())
+        if (isRegisteredVehicle) {
             if (
                 initialValues.fullName === formValues.fullName
                 && initialValues.mobileNumber === formValues.mobileNumber
+                && initialValues.email === formValues.email
+                && initialValues.mobileNumber === formValues.mobileNumber
                 && initialValues.registeredVehicle === formValues.registeredVehicle
-                && initialValues.registrationCountry === formValues.registeredVehicle
+                && initialValues.registrationCountry === formValues.registrationCountry
                 && initialValues.plateNumber === formValues.plateNumber
                 && initialValues.registrationType === formValues.registrationType
-                // && dayjs(initialValues.inspectionDateAndTime) === dayjs(formValues.inspectionDateAndTime)
+                // && initialValues.inspectionDateAndTime === formValues.inspectionDateAndTime
                 && initialValues.inspectionServiceType === formValues.inspectionServiceType
             ) {
                 toast.warn("Nothing to Update")
@@ -131,24 +136,22 @@ export default function UpdateBookingForm() {
         } else if (
             initialValues.fullName === formValues.fullName
             && initialValues.mobileNumber === formValues.mobileNumber
+            && initialValues.email === formValues.email
+            && initialValues.mobileNumber === formValues.mobileNumber
             && initialValues.registeredVehicle === formValues.registeredVehicle
-            && initialValues.plateNumber === formValues.plateNumber
-            
-            // && dayjs(initialValues.inspectionDateAndTime) === dayjs(formValues.inspectionDateAndTime)
-            && initialValues.inspectionServiceType === formValues.inspectionServiceType
+            && initialValues.certificateNumber === formValues.certificateNumber
+            && initialValues.inspectionDateAndTime === formValues.inspectionDateAndTime
+            // && initialValues.inspectionServiceType === formValues.inspectionServiceType
         ) {
             toast.warn("Nothing to Update")
             return false;
         }
-
         return true;
     }
 
     const handleFormSubmit = async (formDetails) => {
         //
         const bookingDetails = getBookingRequest(formDetails);
-
-        console.log(bookingDetails);
 
         // api call
         try {
@@ -158,10 +161,9 @@ export default function UpdateBookingForm() {
                 setIsLoading(true);
                 // register user
                 const scheduleBookingResponse = await updateBooking(bookingDetails);
-                console.log(scheduleBookingResponse);
                 toast.success(scheduleBookingResponse.message);
                 document.getElementById("bookingForm").reset(initialValues);
-                navigate(-1);
+                navigate(`/${userRole.toLowerCase()}/generate-invoice`, { state: { bookingId: scheduleBookingResponse.id } });
             }
         } catch (error) {
             toast.warn(error.response.data.message);
@@ -410,7 +412,6 @@ export default function UpdateBookingForm() {
                                                         name="inspectionDateAndTime"
                                                         onBlur={handleBlur}
                                                         onChange={(date) => setInspectionTime(date)}
-                                                        // format="DD MM YYYY HH:mm A"
                                                         disablePast
                                                         error={!!touched.inspectionDateAndTime && !!errors.inspectionDateAndTime}
                                                         helperText={touched.inspectionDateAndTime && errors.inspectionDateAndTime}
