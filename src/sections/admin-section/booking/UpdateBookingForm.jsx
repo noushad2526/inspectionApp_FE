@@ -106,17 +106,16 @@ export default function UpdateBookingForm() {
         const inspectionDate = dayjs(formDetails.inspectionDateAndTime);
 
         // Now you can format it
-        const formattedDate = inspectionDate.format('ddd MMM D YYYY HH:mm:ss [GMT]ZZ (IST)');
-        formDetails.inspectionDateAndTime = formattedDate;
-
+        // const formattedDate = inspectionDate.format('ddd MMM D YYYY HH:mm:ss [GMT]ZZ (IST)');
+        // formDetails.inspectionDateAndTime = formattedDate;
+        const dateFormat = new Date(formDetails.inspectionDateAndTime);
+        formDetails.inspectionDateAndTime = dateFormat;
         if (!validateValues(formDetails)) return null;
         return formDetails;
     };
 
     // validation for update
     const validateValues = (formValues) => {
-        console.log(formValues.inspectionDateAndTime)
-        console.log(initialValues.inspectionDateAndTime.toString())
         if (isRegisteredVehicle) {
             if (
                 initialValues.fullName === formValues.fullName
@@ -127,7 +126,7 @@ export default function UpdateBookingForm() {
                 && initialValues.registrationCountry === formValues.registrationCountry
                 && initialValues.plateNumber === formValues.plateNumber
                 && initialValues.registrationType === formValues.registrationType
-                // && initialValues.inspectionDateAndTime === formValues.inspectionDateAndTime
+                && initialValues.inspectionDateAndTime === formValues.inspectionDateAndTime
                 && initialValues.inspectionServiceType === formValues.inspectionServiceType
             ) {
                 toast.warn("Nothing to Update")

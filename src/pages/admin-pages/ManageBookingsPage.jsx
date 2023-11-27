@@ -126,20 +126,20 @@ export default function ManageBookingsPage() {
     { field: 'id', headerName: 'Booking Id', width: 130 },
     { field: 'email', headerName: 'E-mail', width: 250 },
     {
-      field: 'inspectionDateAndTime',
-      headerName: 'Inspection Scheduled',
-      width: 180,
-      valueGetter: (params) => {
-        const timestamp = params.row.inspectionDateAndTime;
-        const formattedDate = new Date(timestamp).toLocaleString(undefined, {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-        });
-        return formattedDate;
-      },
+      // field: 'inspectionDateAndTime',
+      // headerName: 'Inspection Scheduled',
+      // width: 180,
+      // valueGetter: (params) => {
+      //   const timestamp = params.row.inspectionDateAndTime;
+      //   const formattedDate = new Date(timestamp).toLocaleString(undefined, {
+      //     year: 'numeric',
+      //     month: 'short',
+      //     day: 'numeric',
+      //     hour: 'numeric',
+      //     minute: 'numeric',
+      //   });
+      //   return formattedDate;
+      // },
     },
     {
       field: "Actions",

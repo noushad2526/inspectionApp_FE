@@ -98,8 +98,10 @@ export default function AddBookingForm() {
         const inspectionDate = dayjs(formDetails.inspectionDateAndTime);
 
         // Now you can format it
-        const formattedDate = inspectionDate.format('ddd MMM D YYYY HH:mm:ss [GMT]ZZ (IST)');
-        formDetails.inspectionDateAndTime = formattedDate;
+        // const formattedDate = inspectionDate.format('ddd MMM D YYYY HH:mm:ss [GMT]ZZ (IST)');
+        // formDetails.inspectionDateAndTime = formattedDate;
+        const dateFormat = new Date(formDetails.inspectionDateAndTime);
+        formDetails.inspectionDateAndTime = dateFormat;
         return formDetails;
     };
 
